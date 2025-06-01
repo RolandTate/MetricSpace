@@ -20,6 +20,16 @@ class MetricSpaceData(ABC):
         """返回数据是否相同"""
         pass
 
+    @abstractmethod
+    def __str__(self):
+        """字符串形式的可打印表示"""
+        pass
+
+    @abstractmethod
+    def __repr__(self):
+        """用于调试的完整表示"""
+        pass
+
 # ========================
 # 2. 度量空间距离函数父类
 # ========================
