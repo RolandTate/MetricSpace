@@ -1,6 +1,7 @@
 import numpy as np
 from utils.umadDataLoader import load_umad_vector_data
 from utils.Distance.MinkowskiDistance import MinkowskiDistance
+from utils.Distance.DiscreteMetricDistance import DiscreteMetricDistance
 
 # 构建数据集内部的完整距离矩阵（不含查询点与其他点的距离）
 def compute_distance_matrix(data, dist_func):
@@ -59,7 +60,7 @@ def progressive_triangle_search(query_idx, data, dist_matrix, dist_func):
 
 
 # 执行主程序
-def run_adaptive_search(path: str, num: int, t_values: list):
+def run_adaptive_search_minkowsiki(path: str, num: int, t_values: list):
     dataset = load_umad_vector_data(path, num)
     print(f"从 {path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
 
@@ -76,6 +77,23 @@ def run_adaptive_search(path: str, num: int, t_values: list):
                 print(f"查询对象索引 {query_index:2d} → 未能唯一确定最近邻，使用距离计算次数: {calc_count}")
         print()
 
+def run_adaptive_search_discrete(path: str, num: int):
+    dataset = load_umad_vector_data(path, num)
+    print(f"从 {path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
+
+    print(f"===== 孤点度量空间距离函数 =====\n")
+    dist_func = DiscreteMetricDistance()
+    dist_matrix = compute_distance_matrix(dataset, dist_func)
+
+    for query_index in range(len(dataset)):
+        result_idx, calc_count = progressive_triangle_search(query_index, dataset, dist_matrix, dist_func)
+        if result_idx is not None:
+            print(f"查询对象索引 {query_index:2d} → 最近邻索引 {result_idx:2d}，使用距离计算次数: {calc_count}")
+        else:
+            print(f"查询对象索引 {query_index:2d} → 未能唯一确定最近邻，使用距离计算次数: {calc_count}")
 
 if __name__ == "__main__":
-    run_adaptive_search("../Datasets/Vector/uniformvector-20dim-1m.txt", num=200, t_values=[1, 2, float('inf')])
+    data_path = "../Datasets/Vector/hawii.txt"
+    num = 50
+    run_adaptive_search_minkowsiki(data_path, num, t_values=[1, 2, float('inf')])
+    run_adaptive_search_discrete(data_path, num)
