@@ -60,9 +60,8 @@ def progressive_triangle_search(query_idx, data, dist_matrix, dist_func):
 
 
 # 执行主程序
-def run_adaptive_search_minkowsiki(path: str, num: int, t_values: list):
-    dataset = load_umad_vector_data(path, num)
-    print(f"从 {path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
+def run_adaptive_search_minkowsiki(dataset, t_values: list):
+    dataset = dataset
 
     for t in t_values:
         print(f"===== 使用 Minkowski 距离 t = {t} =====\n")
@@ -77,9 +76,8 @@ def run_adaptive_search_minkowsiki(path: str, num: int, t_values: list):
                 print(f"查询对象索引 {query_index:2d} → 未能唯一确定最近邻，使用距离计算次数: {calc_count}")
         print()
 
-def run_adaptive_search_discrete(path: str, num: int):
-    dataset = load_umad_vector_data(path, num)
-    print(f"从 {path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
+def run_adaptive_search_discrete(dataset):
+    dataset = dataset
 
     print(f"===== 孤点度量空间距离函数 =====\n")
     dist_func = DiscreteMetricDistance()
@@ -95,5 +93,8 @@ def run_adaptive_search_discrete(path: str, num: int):
 if __name__ == "__main__":
     data_path = "../Datasets/Vector/hawii.txt"
     num = 50
-    run_adaptive_search_minkowsiki(data_path, num, t_values=[1, 2, float('inf')])
-    run_adaptive_search_discrete(data_path, num)
+    dataset = load_umad_vector_data(data_path, num)
+    print(f"从 {data_path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
+
+    run_adaptive_search_minkowsiki(dataset, t_values=[1, 2, float('inf')])
+    run_adaptive_search_discrete(dataset)
