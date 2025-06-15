@@ -13,7 +13,7 @@ class EditDistance(DistanceFunction):
 
         for i in range(m + 1):
             dp[i][0] = i
-        for j in range(n + 1):
+        for j in range(1, n + 1):
             dp[0][j] = j
 
         for i in range(1, m + 1):
@@ -26,3 +26,11 @@ class EditDistance(DistanceFunction):
                 )
 
         return float(dp[m][n])
+
+
+if __name__ == "__main__":
+    a = StringData("AEWWW")
+    b = StringData("GACCCM")
+
+    metric = EditDistance()
+    print(metric.compute(a, b))

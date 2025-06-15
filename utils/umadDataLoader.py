@@ -23,6 +23,7 @@ def load_umad_vector_data(path: str, num: int = None) -> list:
 
         return vectors
 
+
 def load_umad_string_data(path: str, num: int = None) -> list:
     """
     从 UMAD 数据集中加载字符串类型数据
@@ -42,3 +43,37 @@ def load_umad_string_data(path: str, num: int = None) -> list:
             strings.append(StringData(all_lines[i]))
 
     return strings
+
+
+def load_fasta_protein_data(path: str, num: int = None) -> list:
+    """
+    从 FASTA 文件中加载蛋白质序列数据，每条序列封装为 StringData 对象。
+    :param path: FASTA 文件路径
+    :param num: 可选，最多读取的序列数量，默认为全部
+    :return: List[StringData]
+    """
+    sequences = []
+    current_seq = []
+
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith('>'):
+                if current_seq:
+                    seq_str = ''.join(current_seq)
+                    sequences.append(StringData(seq_str))
+                    if num is not None and len(sequences) >= num:
+                        break
+                    current_seq = []
+            else:
+                current_seq.append(line)
+
+        # 最后一条序列
+        if current_seq and (num is None or len(sequences) < num):
+            seq_str = ''.join(current_seq)
+            sequences.append(StringData(seq_str))
+    return sequences
+

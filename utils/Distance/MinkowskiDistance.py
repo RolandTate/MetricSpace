@@ -1,6 +1,7 @@
 import numpy as np
 from utils.MetricSpaceCore import MetricSpaceData, DistanceFunction
 
+
 class MinkowskiDistance(DistanceFunction):
     def __init__(self, t: float):
         """
