@@ -4,6 +4,8 @@ import numpy as np
 # ========================
 # 1. 度量空间数据父类
 # ========================
+
+
 class MetricSpaceData(ABC):
     @abstractmethod
     def get(self):
@@ -33,6 +35,8 @@ class MetricSpaceData(ABC):
 # ========================
 # 2. 度量空间距离函数父类
 # ========================
+
+
 class DistanceFunction(ABC):
     @abstractmethod
     def compute(self, x: MetricSpaceData, y: MetricSpaceData) -> float:

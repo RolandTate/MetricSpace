@@ -4,7 +4,7 @@ from utils.Distance.EditDistance import EditDistance
 from utils.Distance.HammingDistance import HammingDistance
 from utils.Distance.WeightedEditDistance import WeightedEditDistance
 from utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, load_fasta_protein_data
-from indexing.rangeQuery.basic_query import compute_distance_matrix, progressive_triangle_query
+from index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
 import json
 
 def check_score_matrix_symmetry(score_matrix):
@@ -35,8 +35,8 @@ def run_adaptive_query_edit(dataset):
     for query_index in range(len(dataset)):
         for first_pivot in range(len(dataset)):
             if first_pivot != query_index:
-                result_idx, calc_count, distance = progressive_triangle_query(query_index, dataset, dist_matrix,
-                                                                              dist_func, first_pivot)
+                result_idx, calc_count, distance = progressive_triangle_search(query_index, dataset, dist_matrix,
+                                                                               dist_func, first_pivot)
                 if result_idx is not None:
                     print(f"查询对象索引 {query_index:2d}, 使用的第一个支撑点索引 {first_pivot}, 最近邻索引 {result_idx:2d}，距离为: {distance}, 使用距离计算次数: {calc_count}")
                 else:
@@ -54,8 +54,8 @@ def run_adaptive_query_weighted_edit(dataset, score_matrix):
     for query_index in range(len(dataset)):
         for first_pivot in range(len(dataset)):
             if first_pivot != query_index:
-                result_idx, calc_count, distance = progressive_triangle_query(query_index, dataset, dist_matrix,
-                                                                              dist_func, first_pivot)
+                result_idx, calc_count, distance = progressive_triangle_search(query_index, dataset, dist_matrix,
+                                                                               dist_func, first_pivot)
                 if result_idx is not None:
                     print(f"查询对象索引 {query_index:2d}, 使用的第一个支撑点索引 {first_pivot}, 最近邻索引 {result_idx:2d}，距离为: {distance}, 使用距离计算次数: {calc_count}")
                 else:

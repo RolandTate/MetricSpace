@@ -14,7 +14,7 @@ def compute_distance_matrix(data, dist_func):
     return matrix
 
 
-def progressive_triangle_query(query_idx, data, dist_matrix, dist_func, first_pivot=None):
+def progressive_triangle_search(query_idx, data, dist_matrix, dist_func, first_pivot=None):
     query = data[query_idx]
     n = len(data)
     candidates = {i for i in range(n) if i != query_idx and i != first_pivot}
@@ -46,6 +46,10 @@ def progressive_triangle_query(query_idx, data, dist_matrix, dist_func, first_pi
             upper = d_q_p + d_p_i
             bounds[i] = (lower, upper)
 
+        # 如果 pivot 与 query 的距离小于所有候选点的下界，则 pivot 一定是最近邻
+        if all(d_q_p < bounds[i][0] for i in bounds):
+            return pivot, calc_count, d_q_p
+
         to_remove = []
         for i in bounds:
             i_lower, i_upper = bounds[i]
@@ -53,10 +57,6 @@ def progressive_triangle_query(query_idx, data, dist_matrix, dist_func, first_pi
                 to_remove.append(i)
         for i in to_remove:
             candidates.remove(i)
-
-        # 如果 pivot 与 query 的距离小于所有候选点的下界，则 pivot 一定是最近邻
-        if all(d_q_p < bounds[i][0] for i in bounds):
-            return pivot, calc_count, d_q_p
 
     # 若仍无法唯一确定最近邻，选取已计算的最小距离
     best_idx, best_dist = min(pivot_distances.items(), key=lambda x: x[1])

@@ -2,7 +2,7 @@ import numpy as np
 from utils.umadDataLoader import load_umad_vector_data
 from utils.Distance.MinkowskiDistance import MinkowskiDistance
 from utils.Distance.DiscreteMetricDistance import DiscreteMetricDistance
-from indexing.rangeQuery.basic_query import compute_distance_matrix, progressive_triangle_query
+from index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
 
 
 # 执行主程序
@@ -17,8 +17,8 @@ def run_adaptive_search_minkowsiki(dataset, t_values: list):
         for query_index in range(len(dataset)):
             for first_pivot in range(len(dataset)):
                 if first_pivot != query_index:
-                    result_idx, calc_count, distance = progressive_triangle_query(query_index, dataset, dist_matrix,
-                                                                                  dist_func, first_pivot)
+                    result_idx, calc_count, distance = progressive_triangle_search(query_index, dataset, dist_matrix,
+                                                                                   dist_func, first_pivot)
                     if result_idx is not None:
                         print(
                             f"查询对象索引 {query_index:2d}, 使用的第一个支撑点索引 {first_pivot}, 最近邻索引 {result_idx:2d}，距离为: {distance}, 使用距离计算次数: {calc_count}")
@@ -36,8 +36,8 @@ def run_adaptive_search_discrete(dataset):
     for query_index in range(len(dataset)):
         for first_pivot in range(len(dataset)):
             if first_pivot != query_index:
-                result_idx, calc_count, distance = progressive_triangle_query(query_index, dataset, dist_matrix,
-                                                                              dist_func, first_pivot)
+                result_idx, calc_count, distance = progressive_triangle_search(query_index, dataset, dist_matrix,
+                                                                               dist_func, first_pivot)
                 if result_idx is not None:
                     print(
                         f"查询对象索引 {query_index:2d}, 使用的第一个支撑点索引 {first_pivot}, 最近邻索引 {result_idx:2d}，距离为: {distance}, 使用距离计算次数: {calc_count}")
