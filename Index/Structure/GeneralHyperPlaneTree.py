@@ -25,8 +25,7 @@ def GHTBulkload(data, max_leaf_size, distance_function, pivot_selector: PivotSel
         return None
     # 当数据量小于等于 MaxLeafSize 时，构建 Pivot Table 作为叶子节点
     if len(data) <= max_leaf_size:
-        pivot, data = pivot_selector.select(data, 1)
-        return PivotTable(data, pivot, distance_function, max_leaf_size)  # 构建 PivotTable
+        return PivotTable(data, distance_function, pivot_selector, max_leaf_size, 1)  # 构建 PivotTable
 
     # 选择两个支撑点（这里简单随机选择）
     pivots, data = pivot_selector.select(data, 2)

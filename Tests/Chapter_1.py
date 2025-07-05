@@ -45,8 +45,8 @@ def run_adaptive_search_discrete(dataset):
 
 
 if __name__ == "__main__":
-    data_path = "../Datasets/Vector/hawii.txt"
-    num = 50
+    data_path = "../Datasets/Vector/randomvector-5-1m"
+    num = 20
     dataset = load_umad_vector_data(data_path, num)
     print(f"从 {data_path} 加载前 {num} 条数据，共执行 {len(dataset)} 轮查询\n")
 

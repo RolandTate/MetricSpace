@@ -81,7 +81,7 @@ def interactive_loop():
 
     # 第一步：选择数据集并加载
     dataset_name, (path, loader, data_class) = select_option("数据集", DATASETS)
-    num = int(input("输入加载数据的数量（例如 20）："))
+    num = int(input("输入加载数据的数量（例如 20）:"))
     dataset = loader(path, num)
     print(f"已加载 {len(dataset)} 条记录。")
 
@@ -101,12 +101,13 @@ def interactive_loop():
     # 第四步：选择索引结构并构建索引
     index_name, index_type = select_option("索引结构", INDEX_STRUCTURES)
 
+    max_leaf_size = int(input("输入叶子节点数据量最大值（例如 20）:"))
+    pivot_k = int(input("输入叶子支撑点数量最大值（例如 2）:"))
+
     try:
         if index_type == "pivot_table":
-            data_set, pivot_set = pivot_selector.select(dataset, k=3)
-            index = PivotTable(data_set, pivot_set, distance_func, num)
+            index = PivotTable(dataset, distance_func, pivot_selector, max_leaf_size, pivot_k)
         elif index_type == "GHT":
-            max_leaf_size = 10
             index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector)
         else:
             raise ValueError(f"暂不支持的索引结构: {index_type}")
@@ -144,6 +145,8 @@ def interactive_loop():
 
         try:
             if query_algo == "pivot_table":
+                if not isinstance(index, PivotTable):
+                    raise TypeError("查询算法与索引结构不匹配：需要PivotTable索引")
                 result, calc_count = PTRangeSearch(index, query_obj, distance_func, radius)
             elif query_algo == "GHT":
                 result, calc_count = GHTRangeSearch(index, query_obj, distance_func, radius)
