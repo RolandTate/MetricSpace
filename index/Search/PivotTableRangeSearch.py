@@ -44,8 +44,8 @@ def PTRangeSearch(pivot_table: PivotTable, distance_function: DistanceFunction, 
         # 如果无法排除或直接判定，则进行直接距离计算
         if not done:
             if distance_function.compute(point, query_point) <= radius:
-                distance_count += 1
                 result.append(point)
+            distance_count += 1
 
     return result, distance_count
 

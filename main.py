@@ -65,38 +65,6 @@ def select_option(name, options):
         print("无效输入，请重新输入。")
 
 
-def run_search(dataset, distance_func, index_type, query_algo, radius, query_indices, pivot_indices, max_leaf_size):
-    # 构建索引结构：用除了查询点以外的数据 + 支撑点
-    pivot_set = [dataset[i] for i in pivot_indices]
-    data_set = [dataset[i] for i in range(len(dataset)) if i not in query_indices and i not in pivot_indices]
-
-    try:
-        if index_type == "pivot_table":
-            index = PivotTable(data_set, pivot_set, distance_func, max_leaf_size)
-        else:
-            raise ValueError(f"不支持的索引结构类型: {index_type}")
-    except Exception as e:
-        print(f"索引构建失败: {e}")
-        return
-
-    # 对每个查询点执行查询算法
-    for query_index in query_indices:
-        query_obj = dataset[query_index]
-        try:
-            if query_algo == "pivot_table":
-                result, calc_count = PTRangeSearch(index, distance_func, query_obj, radius)
-            else:
-                raise ValueError(f"不支持的查询算法类型: {query_algo}")
-            result_index = {i for i, x in enumerate(dataset) if x in result}
-            if result:
-                print(f"查询索引 {query_index}, 半径 {radius} → 结果索引: {result_index}, 距离计算: {calc_count}")
-            else:
-                print(f"查询索引 {query_index}, 半径 {radius} → 无结果, 距离计算: {calc_count}")
-        except Exception as e:
-            print(f"查询点索引 {query_index} 执行失败: {e}")
-
-
-
 def interactive_loop():
     print("\n========== 查询系统 ==========")
 
@@ -104,7 +72,7 @@ def interactive_loop():
     dataset_name, (path, loader, data_class) = select_option("数据集", DATASETS)
     num = int(input("输入加载数据的数量（例如 20）："))
     dataset = loader(path, num)
-    print(f"已加载 {len(dataset)} 条记录。\n")
+    print(f"已加载 {len(dataset)} 条记录。")
 
     # 第二步：选择距离函数
     if data_class.__name__ == "VectorData":
@@ -114,13 +82,20 @@ def interactive_loop():
         distance_name, distance_func_gen = select_option("距离函数", DISTANCES_String)
         distance_func = distance_func_gen()
 
-    # 第三步：选择支撑点索引
-    pivot_input = input("请输入支撑点索引（例如 1,2,3 或 all）：").strip()
-    if pivot_input.lower() == "all":
-        pivot_indices = list(range(len(dataset)))
-    else:
-        pivot_indices = list(map(int, pivot_input.split(",")))
-    pivot_set = [dataset[i] for i in pivot_indices]
+    # 第三步：选择支撑点序号
+    while True:
+        pivot_input = input("请输入支撑点序号（例如 0,1,2 或 all）：").strip()
+        try:
+            if pivot_input.lower() == "all":
+                pivot_indices = list(range(len(dataset)))
+            else:
+                pivot_indices = list(map(int, pivot_input.split(",")))
+                if any(i < 0 or i >= len(dataset) for i in pivot_indices):
+                    raise IndexError("序号超出范围")
+            pivot_set = [dataset[i] for i in pivot_indices]
+            break  # 输入合法，跳出循环
+        except Exception as e:
+            print(f"支撑点序号输入无效：{e}，请重新输入。")
 
     # 第四步：选择索引结构并构建索引
     index_name, index_type = select_option("索引结构", INDEX_STRUCTURES)
@@ -170,14 +145,15 @@ def interactive_loop():
                 raise ValueError(f"暂不支持的查询算法: {query_algo}")
             result_index = {i for i, x in enumerate(dataset) if x in result}
             if result:
-                print(f"[结果] 查询: {query_obj}, 半径 {radius} → 命中索引: {result_index}, 距离计算: {calc_count}")
+                result_input = input(f"查询点: {query_obj}, 半径 {radius} → 搜索到 {len(result)} 个结果, 使用了 {calc_count} 次距离计算, 是否输出具体结果(y/n)?")
+                if result_input.lower() == "y":
+                    [print(f"[{i}] {x}") for i, x in enumerate(dataset) if x in result]
             else:
-                print(f"[结果] 查询: {query_obj}, 半径 {radius} → 无命中, 距离计算: {calc_count}")
+                print(f"查询点: {query_obj}, 半径 {radius} → 无命中, 使用了 {calc_count} 距离计算次数")
         except Exception as e:
             print(f"查询失败: {e}")
 
     print("\n查询结束，感谢使用！")
-
 
 
 if __name__ == "__main__":
