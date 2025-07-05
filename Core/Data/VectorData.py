@@ -1,5 +1,5 @@
 import numpy as np
-from utils.MetricSpaceCore import MetricSpaceData
+from Core.MetricSpaceCore import MetricSpaceData
 
 
 class VectorData(MetricSpaceData):

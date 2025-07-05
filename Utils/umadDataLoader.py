@@ -1,6 +1,6 @@
 import numpy as np
-from utils.Data.VectorData import VectorData
-from utils.Data.StringData import StringData
+from Core.Data.VectorData import VectorData
+from Core.Data.StringData import StringData
 
 
 def load_umad_vector_data(path: str, num: int = None) -> list:

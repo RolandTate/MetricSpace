@@ -1,5 +1,5 @@
 import numpy as np
-from utils.MetricSpaceCore import MetricSpaceData, DistanceFunction
+from Core.MetricSpaceCore import MetricSpaceData, DistanceFunction
 
 
 class MinkowskiDistance(DistanceFunction):

@@ -1,15 +1,15 @@
-from index.Structure.PivotTable import PivotTable
-from utils.MetricSpaceCore import DistanceFunction, MetricSpaceData
+from Index.Structure.PivotTable import PivotTable
+from Core.MetricSpaceCore import DistanceFunction, MetricSpaceData
 
 
-def PTRangeSearch(pivot_table: PivotTable, distance_function: DistanceFunction, query_point: MetricSpaceData, radius):
+def PTRangeSearch(pivot_table: PivotTable, query_point: MetricSpaceData, distance_function: DistanceFunction, radius):
     """
     Pivot Table 的范围查询算法
     :param pivot_table: PivotTable 实例
     :param distance_function: 距离函数，用于计算支撑点与查询点的距离
     :param query_point: 查询点
     :param radius: 查询半径
-    :return: 查询结果集
+    :return: (命中对象列表, 距离计算次数)
     """
     result = []  # 初始化结果集
     pivot_distance = []  # 支撑点与查询点的距离

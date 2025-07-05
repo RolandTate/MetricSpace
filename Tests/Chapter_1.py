@@ -1,8 +1,7 @@
-import numpy as np
-from utils.umadDataLoader import load_umad_vector_data
-from utils.Distance.MinkowskiDistance import MinkowskiDistance
-from utils.Distance.DiscreteMetricDistance import DiscreteMetricDistance
-from index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
+from Utils.umadDataLoader import load_umad_vector_data
+from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
+from Core.DistanceFunction.DiscreteMetricDistance import DiscreteMetricDistance
+from Index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
 
 
 # 执行主程序

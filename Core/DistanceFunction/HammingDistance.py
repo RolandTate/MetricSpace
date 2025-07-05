@@ -1,5 +1,5 @@
-from utils.MetricSpaceCore import DistanceFunction
-from utils.Data.StringData import StringData
+from Core.MetricSpaceCore import DistanceFunction
+from Core.Data.StringData import StringData
 
 
 class HammingDistance(DistanceFunction):
@@ -20,7 +20,7 @@ class HammingDistance(DistanceFunction):
 
 
 if __name__ == "__main__":
-    from utils.Data.StringData import StringData
+    from Core.Data.StringData import StringData
 
     a = StringData("karoling")
     b = StringData("kathrinb")

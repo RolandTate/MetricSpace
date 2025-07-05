@@ -2,16 +2,19 @@ import json
 
 import numpy as np
 
-from tests.Chapter_2 import check_score_matrix_symmetry
-from utils.Data.VectorData import VectorData
-from utils.Data.StringData import StringData
-from utils.Distance.EditDistance import EditDistance
-from utils.Distance.HammingDistance import HammingDistance
-from utils.Distance.WeightedEditDistance import WeightedEditDistance
-from utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, load_fasta_protein_data
-from utils.Distance.MinkowskiDistance import MinkowskiDistance
-from index.Structure.PivotTable import PivotTable
-from index.Search.PivotTableRangeSearch import PTRangeSearch
+from Algorithm.PivotSelection.ManualSelection import ManualPivotSelector
+from Algorithm.PivotSelection.RandSelection import RandomPivotSelector
+from Core.Data.VectorData import VectorData
+from Core.Data.StringData import StringData
+from Core.DistanceFunction.EditDistance import EditDistance
+from Core.DistanceFunction.HammingDistance import HammingDistance
+from Core.DistanceFunction.WeightedEditDistance import WeightedEditDistance
+from Index.Search.GeneralHyperPlaneTreeSearch import GHTRangeSearch
+from Index.Structure.GeneralHyperPlaneTree import GHTBulkload
+from Utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, load_fasta_protein_data
+from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
+from Index.Structure.PivotTable import PivotTable
+from Index.Search.PivotTableRangeSearch import PTRangeSearch
 
 # 可选配置
 DATASETS = {
@@ -42,12 +45,20 @@ DISTANCES_String = {
     "加权编辑距离（现默认使用mPAM）": lambda: WeightedEditDistance(score_matrix)
 }
 
+
+PIVOT_SELECTORS = {
+    "手动选择支撑点": lambda: ManualPivotSelector(),
+    "随机选择支撑点": lambda: RandomPivotSelector(seed=42)
+}
+
 INDEX_STRUCTURES = {
-    "Pivot Table": "pivot_table"
+    "Pivot Table": "pivot_table",
+    "General Hyper-plane Tree": "GHT"
 }
 
 QUERY_ALGOS = {
-    "Pivot Table Range Search": "pivot_table"
+    "Pivot Table Range Search": "pivot_table",
+    "General Hyper-plane Tree Range Search": "GHT"
 }
 
 
@@ -83,30 +94,23 @@ def interactive_loop():
         distance_func = distance_func_gen()
 
     # 第三步：选择支撑点序号
-    while True:
-        pivot_input = input("请输入支撑点序号（例如 0,1,2 或 all）：").strip()
-        try:
-            if pivot_input.lower() == "all":
-                pivot_indices = list(range(len(dataset)))
-            else:
-                pivot_indices = list(map(int, pivot_input.split(",")))
-                if any(i < 0 or i >= len(dataset) for i in pivot_indices):
-                    raise IndexError("序号超出范围")
-            pivot_set = [dataset[i] for i in pivot_indices]
-            break  # 输入合法，跳出循环
-        except Exception as e:
-            print(f"支撑点序号输入无效：{e}，请重新输入。")
+    pivot_selector_name, pivot_selector_func = select_option("支撑点选择算法", PIVOT_SELECTORS)
+    pivot_selector = pivot_selector_func()
+    print(f"选择的支撑点策略是：{pivot_selector_name}")
 
     # 第四步：选择索引结构并构建索引
     index_name, index_type = select_option("索引结构", INDEX_STRUCTURES)
-    data_set = [dataset[i] for i in range(len(dataset)) if i not in pivot_indices]
 
     try:
         if index_type == "pivot_table":
+            data_set, pivot_set = pivot_selector.select(dataset, k=3)
             index = PivotTable(data_set, pivot_set, distance_func, num)
+        elif index_type == "GHT":
+            max_leaf_size = 10
+            index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector)
         else:
             raise ValueError(f"暂不支持的索引结构: {index_type}")
-        print(f"{index_name} 索引构建完成，共 {len(data_set)} 个数据点，{len(pivot_set)} 个支撑点。")
+        print(f"{index_name} 索引构建完成")
     except Exception as e:
         print(f"索引构建失败: {e}")
         return
@@ -140,7 +144,9 @@ def interactive_loop():
 
         try:
             if query_algo == "pivot_table":
-                result, calc_count = PTRangeSearch(index, distance_func, query_obj, radius)
+                result, calc_count = PTRangeSearch(index, query_obj, distance_func, radius)
+            elif query_algo == "GHT":
+                result, calc_count = GHTRangeSearch(index, query_obj, distance_func, radius)
             else:
                 raise ValueError(f"暂不支持的查询算法: {query_algo}")
             result_index = {i for i, x in enumerate(dataset) if x in result}

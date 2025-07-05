@@ -1,10 +1,7 @@
-import numpy as np
-
-from utils.Distance.EditDistance import EditDistance
-from utils.Distance.HammingDistance import HammingDistance
-from utils.Distance.WeightedEditDistance import WeightedEditDistance
-from utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, load_fasta_protein_data
-from index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
+from Core.DistanceFunction.EditDistance import EditDistance
+from Core.DistanceFunction.WeightedEditDistance import WeightedEditDistance
+from Utils.umadDataLoader import load_umad_string_data, load_fasta_protein_data
+from Index.Search.BasicSearch import compute_distance_matrix, progressive_triangle_search
 import json
 
 def check_score_matrix_symmetry(score_matrix):

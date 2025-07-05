@@ -1,4 +1,4 @@
-from utils.MetricSpaceCore import DistanceFunction
+from Core.MetricSpaceCore import DistanceFunction
 
 
 class PivotTable:

@@ -1,5 +1,5 @@
-from utils.MetricSpaceCore import DistanceFunction
-from utils.Data.StringData import StringData
+from Core.MetricSpaceCore import DistanceFunction
+from Core.Data.StringData import StringData
 
 
 class WeightedEditDistance(DistanceFunction):
