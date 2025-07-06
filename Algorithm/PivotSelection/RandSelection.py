@@ -7,7 +7,7 @@ class RandomPivotSelector(PivotSelector):
         if seed is not None:
             random.seed(seed)
 
-    def select(self, data: list, k: int) -> tuple[list, list]:
+    def select(self, data: list, k: int, node_name: str = "") -> tuple[list, list]:
         pivots = random.sample(data, k)
         remaining = [x for x in data if x not in pivots]
         return pivots, remaining

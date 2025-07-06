@@ -16,7 +16,7 @@ class PivotTable:
             raise IndexError(f"Number of data ({len(data)}) larger than max_leaf_size ({max_leaf_size})")
         
         # 使用支撑点选择器选择支撑点
-        self.pivots, self.pivot_data = pivot_selector.select(data, pivot_k)
+        self.pivots, self.pivot_data = pivot_selector.select(data, pivot_k, "PivotTable叶子节点")
         
         # 计算所有数据点到支撑点的距离
         self.distance = [

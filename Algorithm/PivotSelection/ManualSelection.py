@@ -2,8 +2,13 @@ from Algorithm.PivotSelection.SelectorCore import PivotSelector
 
 
 class ManualPivotSelector(PivotSelector):
-    def select(self, data: list, k: int) -> tuple[list, list]:
-        print("\n当前可用数据点:")
+    def select(self, data: list, k: int, node_name: str = "") -> tuple[list, list]:
+        if node_name:
+            print(f"\n=== 为节点 '{node_name}' 选择支撑点 ===")
+        else:
+            print(f"\n=== 选择支撑点 ===")
+        
+        print("当前可用数据点:")
         for i, obj in enumerate(data):
             print(f"{i}: {obj}")
 

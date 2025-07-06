@@ -15,6 +15,8 @@ from Utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, l
 from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
 from Index.Structure.PivotTable import PivotTable
 from Index.Search.PivotTableRangeSearch import PTRangeSearch
+from Index.Structure.VantagePointTree import VPTBulkload, VPTInternalNode
+from Index.Search.VantagePointTreeSearch import VPTRangeSearch
 
 # 可选配置
 DATASETS = {
@@ -53,12 +55,8 @@ PIVOT_SELECTORS = {
 
 INDEX_STRUCTURES = {
     "Pivot Table": "pivot_table",
-    "General Hyper-plane Tree": "GHT"
-}
-
-QUERY_ALGOS = {
-    "Pivot Table Range Search": "pivot_table",
-    "General Hyper-plane Tree Range Search": "GHT"
+    "General Hyper-plane Tree": "GHT",
+    "Vantage Point Tree": "VPT"
 }
 
 
@@ -108,7 +106,9 @@ def interactive_loop():
         if index_type == "pivot_table":
             index = PivotTable(dataset, distance_func, pivot_selector, max_leaf_size, pivot_k)
         elif index_type == "GHT":
-            index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector)
+            index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
+        elif index_type == "VPT":
+            index = VPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
         else:
             raise ValueError(f"暂不支持的索引结构: {index_type}")
         print(f"{index_name} 索引构建完成")
@@ -116,8 +116,20 @@ def interactive_loop():
         print(f"索引构建失败: {e}")
         return
 
-    # 第五步：进入查询循环
-    query_name, query_algo = select_option("查询算法", QUERY_ALGOS)
+    # 第五步：根据索引结构自动选择对应的查询算法
+    if index_type == "pivot_table":
+        query_algo = "pivot_table"
+        query_name = "Pivot Table Range Search"
+    elif index_type == "GHT":
+        query_algo = "GHT"
+        query_name = "General Hyper-plane Tree Range Search"
+    elif index_type == "VPT":
+        query_algo = "VPT"
+        query_name = "Vantage Point Tree Range Search"
+    else:
+        raise ValueError(f"暂不支持的索引结构: {index_type}")
+    
+    print(f"自动选择查询算法: {query_name}")
 
     while True:
         radius_input = input("\n请输入查询半径（或输入 'exit' 退出）：").strip()
@@ -150,6 +162,10 @@ def interactive_loop():
                 result, calc_count = PTRangeSearch(index, query_obj, distance_func, radius)
             elif query_algo == "GHT":
                 result, calc_count = GHTRangeSearch(index, query_obj, distance_func, radius)
+            elif query_algo == "VPT":
+                if not isinstance(index, (VPTInternalNode, PivotTable)):
+                    raise TypeError("查询算法与索引结构不匹配：需要VPTInternalNode或PivotTable索引")
+                result, calc_count = VPTRangeSearch(index, query_obj, distance_func, radius)
             else:
                 raise ValueError(f"暂不支持的查询算法: {query_algo}")
             result_index = {i for i, x in enumerate(dataset) if x in result}
