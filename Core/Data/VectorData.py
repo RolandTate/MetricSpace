@@ -19,6 +19,10 @@ class VectorData(MetricSpaceData):
             return False
         return np.array_equal(self.vector, other.vector)
 
+    def __hash__(self):
+        # 将numpy数组转换为可哈希的元组
+        return hash(tuple(self.vector.flatten()))
+
     def __repr__(self):
         return f'VectorData({self.vector.tolist()})'
 

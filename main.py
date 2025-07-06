@@ -17,6 +17,8 @@ from Index.Structure.PivotTable import PivotTable
 from Index.Search.PivotTableRangeSearch import PTRangeSearch
 from Index.Structure.VantagePointTree import VPTBulkload, VPTInternalNode
 from Index.Search.VantagePointTreeSearch import VPTRangeSearch
+from Index.Structure.MultipleVantagePoinTree import MVPTBulkload, MVPTInternalNode
+from Index.Search.MultipleVantagePointTreeSearch import MVPTRangeSearch
 
 # 可选配置
 DATASETS = {
@@ -56,7 +58,8 @@ PIVOT_SELECTORS = {
 INDEX_STRUCTURES = {
     "Pivot Table": "pivot_table",
     "General Hyper-plane Tree": "GHT",
-    "Vantage Point Tree": "VPT"
+    "Vantage Point Tree": "VPT",
+    "Multiple Vantage Point Tree": "MVPT"
 }
 
 
@@ -109,6 +112,10 @@ def interactive_loop():
             index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
         elif index_type == "VPT":
             index = VPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
+        elif index_type == "MVPT":
+            num_regions = int(input("输入每个支撑点划分的区域数（例如 2）:"))
+            internal_pivot_k = int(input("输入MVPT内部节点支撑点数量（例如 2）:"))
+            index = MVPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k, num_regions, internal_pivot_k)
         else:
             raise ValueError(f"暂不支持的索引结构: {index_type}")
         print(f"{index_name} 索引构建完成")
@@ -126,6 +133,9 @@ def interactive_loop():
     elif index_type == "VPT":
         query_algo = "VPT"
         query_name = "Vantage Point Tree Range Search"
+    elif index_type == "MVPT":
+        query_algo = "MVPT"
+        query_name = "Multiple Vantage Point Tree Range Search"
     else:
         raise ValueError(f"暂不支持的索引结构: {index_type}")
     
@@ -166,13 +176,32 @@ def interactive_loop():
                 if not isinstance(index, (VPTInternalNode, PivotTable)):
                     raise TypeError("查询算法与索引结构不匹配：需要VPTInternalNode或PivotTable索引")
                 result, calc_count = VPTRangeSearch(index, query_obj, distance_func, radius)
+            elif query_algo == "MVPT":
+                if not isinstance(index, (MVPTInternalNode, PivotTable)):
+                    raise TypeError("查询算法与索引结构不匹配：需要MVPTInternalNode或PivotTable索引")
+                result, calc_count = MVPTRangeSearch(index, query_obj, distance_func, radius)
             else:
                 raise ValueError(f"暂不支持的查询算法: {query_algo}")
-            result_index = {i for i, x in enumerate(dataset) if x in result}
+            # 获取结果在原始数据集中的索引
+            result_indices = []
+            # 对结果进行去重，确保每个唯一的数据点只处理一次
+            unique_results = []
+            for r in result:
+                if r not in unique_results:
+                    unique_results.append(r)
+            
+            # 为每个唯一结果查找所有匹配的索引
+            for r in unique_results:
+                for i, x in enumerate(dataset):
+                    if x == r:  # 使用相等比较
+                        result_indices.append(i)
+                        # 不break，继续查找所有匹配的索引
+            
             if result:
                 result_input = input(f"查询点: {query_obj}, 半径 {radius} → 搜索到 {len(result)} 个结果, 使用了 {calc_count} 次距离计算, 是否输出具体结果(y/n)?")
                 if result_input.lower() == "y":
-                    [print(f"[{i}] {x}") for i, x in enumerate(dataset) if x in result]
+                    for i in result_indices:
+                        print(f"[{i}] {dataset[i]}")
             else:
                 print(f"查询点: {query_obj}, 半径 {radius} → 无命中, 使用了 {calc_count} 距离计算次数")
         except Exception as e:

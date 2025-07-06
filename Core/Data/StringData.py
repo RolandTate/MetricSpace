@@ -18,6 +18,9 @@ class StringData(MetricSpaceData):
             return False
         return self.value == other.value
 
+    def __hash__(self):
+        return hash(self.value)
+
     def __repr__(self):
         return f'StringData("{self.value}")'
 
