@@ -99,47 +99,37 @@ def interactive_loop():
     pivot_selector = pivot_selector_func()
     print(f"选择的支撑点策略是：{pivot_selector_name}")
 
-    # 第四步：选择索引结构并构建索引
+    # 第四步：选择索引结构并构建索引，同时确定查询算法
     index_name, index_type = select_option("索引结构", INDEX_STRUCTURES)
 
     max_leaf_size = int(input("输入叶子节点数据量最大值（例如 20）:"))
     pivot_k = int(input("输入叶子支撑点数量最大值（例如 2）:"))
 
+    # 索引结构构建器和对应的查询算法映射
+    INDEX_BUILDERS = {
+        "pivot_table": (lambda: PivotTable(dataset, distance_func, pivot_selector, max_leaf_size, pivot_k), 
+                       PTRangeSearch, "Pivot Table Range Search"),
+        "GHT": (lambda: GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k),
+                GHTRangeSearch, "General Hyper-plane Tree Range Search"),
+        "VPT": (lambda: VPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k),
+                VPTRangeSearch, "Vantage Point Tree Range Search"),
+        "MVPT": (lambda: MVPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k, 
+                                     int(input("输入每个支撑点划分的区域数（例如 2）:")),
+                                     int(input("输入MVPT内部节点支撑点数量（例如 2）:"))),
+                 MVPTRangeSearch, "Multiple Vantage Point Tree Range Search")
+    }
+    
+    if index_type not in INDEX_BUILDERS:
+        raise ValueError(f"暂不支持的索引结构: {index_type}")
+    
     try:
-        if index_type == "pivot_table":
-            index = PivotTable(dataset, distance_func, pivot_selector, max_leaf_size, pivot_k)
-        elif index_type == "GHT":
-            index = GHTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
-        elif index_type == "VPT":
-            index = VPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k)
-        elif index_type == "MVPT":
-            num_regions = int(input("输入每个支撑点划分的区域数（例如 2）:"))
-            internal_pivot_k = int(input("输入MVPT内部节点支撑点数量（例如 2）:"))
-            index = MVPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k, num_regions, internal_pivot_k)
-        else:
-            raise ValueError(f"暂不支持的索引结构: {index_type}")
+        index_builder, query_func, query_name = INDEX_BUILDERS[index_type]
+        index = index_builder()
         print(f"{index_name} 索引构建完成")
+        print(f"自动选择查询算法: {query_name}")
     except Exception as e:
         print(f"索引构建失败: {e}")
         return
-
-    # 第五步：根据索引结构自动选择对应的查询算法
-    if index_type == "pivot_table":
-        query_algo = "pivot_table"
-        query_name = "Pivot Table Range Search"
-    elif index_type == "GHT":
-        query_algo = "GHT"
-        query_name = "General Hyper-plane Tree Range Search"
-    elif index_type == "VPT":
-        query_algo = "VPT"
-        query_name = "Vantage Point Tree Range Search"
-    elif index_type == "MVPT":
-        query_algo = "MVPT"
-        query_name = "Multiple Vantage Point Tree Range Search"
-    else:
-        raise ValueError(f"暂不支持的索引结构: {index_type}")
-    
-    print(f"自动选择查询算法: {query_name}")
 
     while True:
         radius_input = input("\n请输入查询半径（或输入 'exit' 退出）：").strip()
@@ -166,22 +156,8 @@ def interactive_loop():
             continue
 
         try:
-            if query_algo == "pivot_table":
-                if not isinstance(index, PivotTable):
-                    raise TypeError("查询算法与索引结构不匹配：需要PivotTable索引")
-                result, calc_count = PTRangeSearch(index, query_obj, distance_func, radius)
-            elif query_algo == "GHT":
-                result, calc_count = GHTRangeSearch(index, query_obj, distance_func, radius)
-            elif query_algo == "VPT":
-                if not isinstance(index, (VPTInternalNode, PivotTable)):
-                    raise TypeError("查询算法与索引结构不匹配：需要VPTInternalNode或PivotTable索引")
-                result, calc_count = VPTRangeSearch(index, query_obj, distance_func, radius)
-            elif query_algo == "MVPT":
-                if not isinstance(index, (MVPTInternalNode, PivotTable)):
-                    raise TypeError("查询算法与索引结构不匹配：需要MVPTInternalNode或PivotTable索引")
-                result, calc_count = MVPTRangeSearch(index, query_obj, distance_func, radius)
-            else:
-                raise ValueError(f"暂不支持的查询算法: {query_algo}")
+            # 直接调用对应的查询函数
+            result, calc_count = query_func(index, query_obj, distance_func, radius)
             # 获取结果在原始数据集中的索引
             result_indices = []
             # 对结果进行去重，确保每个唯一的数据点只处理一次
