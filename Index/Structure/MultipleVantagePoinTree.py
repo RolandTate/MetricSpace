@@ -3,7 +3,7 @@ from Core.MetricSpaceCore import MetricSpaceData, DistanceFunction
 from Index.Structure.PivotTable import PivotTable
 
 
-def split_data(data, vantage_point, num_regions, distance_function):
+def mvpt_split_data(data, vantage_point, num_regions, distance_function):
     """
     根据优势点将数据划分为多个区域
     :param data: 数据列表
@@ -67,7 +67,7 @@ def MVPTBulkload(data, max_leaf_size, distance_function, pivot_selector: PivotSe
         for partition in partitions:
             if len(partition) > 0:
                 # 每个现子集基于当前支撑点划分成num_regions个新子集
-                new_partitions.extend(split_data(partition, pivots[i], num_regions, distance_function))
+                new_partitions.extend(mvpt_split_data(partition, pivots[i], num_regions, distance_function))
         partitions = new_partitions
     
     # 初始化上下界矩阵和子节点集合
