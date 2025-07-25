@@ -24,28 +24,30 @@ def PTRangeSearch(pivot_table: PivotTable, query_point: MetricSpaceData, distanc
             result.append(pivot)
 
     # Step 2: 处理每个数据对象
-    for j, point in enumerate(pivot_table.get_data()):
-        done = False  # 标记当前数据对象是否被处理
+    data_points = pivot_table.get_data()
+    if data_points:  # 非空才处理
+        for j, point in enumerate(data_points):
+            done = False  # 标记当前数据对象是否被处理
 
-        for i in range(len(pivot_table.get_pivots())):
-            dist_pq = pivot_distance[i]
-            dist_pd = pivot_table.get_distance(i, j)
-            # 包含规则
-            if dist_pq + dist_pd <= radius:
-                result.append(point)
-                done = True
-                break
+            for i in range(len(pivot_table.get_pivots())):
+                dist_pq = pivot_distance[i]
+                dist_pd = pivot_table.get_distance(i, j)
+                # 包含规则
+                if dist_pq + dist_pd <= radius:
+                    result.append(point)
+                    done = True
+                    break
 
-            # 排除规则
-            if abs(dist_pq - dist_pd) > radius:
-                done = True
-                break
+                # 排除规则
+                if abs(dist_pq - dist_pd) > radius:
+                    done = True
+                    break
 
-        # 如果无法排除或直接判定，则进行直接距离计算
-        if not done:
-            if distance_function.compute(point, query_point) <= radius:
-                result.append(point)
-            distance_count += 1
+            # 如果无法排除或直接判定，则进行直接距离计算
+            if not done:
+                if distance_function.compute(point, query_point) <= radius:
+                    result.append(point)
+                distance_count += 1
 
     return result, distance_count
 
