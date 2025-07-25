@@ -19,6 +19,8 @@ from Index.Structure.VantagePointTree import VPTBulkload, VPTInternalNode
 from Index.Search.VantagePointTreeSearch import VPTRangeSearch
 from Index.Structure.MultipleVantagePoinTree import MVPTBulkload, MVPTInternalNode
 from Index.Search.MultipleVantagePointTreeSearch import MVPTRangeSearch
+from Algorithm.PivotSelection.MaxVarianceSelection import MaxVariancePivotSelector
+from Algorithm.PivotSelection.FarthestFirstTraversalSelection import FarthestFirstTraversalSelector
 
 # 可选配置
 DATASETS = {
@@ -51,8 +53,10 @@ DISTANCES_String = {
 
 
 PIVOT_SELECTORS = {
-    "手动选择支撑点": lambda: ManualPivotSelector(),
-    "随机选择支撑点": lambda: RandomPivotSelector(seed=42)
+    "手动选择支撑点": lambda _: ManualPivotSelector(),
+    "随机选择支撑点": lambda _: RandomPivotSelector(seed=42),
+    "最大方差选择支撑点": lambda df: MaxVariancePivotSelector(df),
+    "最远优先遍历选择支撑点": lambda df: FarthestFirstTraversalSelector(df)
 }
 
 INDEX_STRUCTURES = {
@@ -96,7 +100,7 @@ def interactive_loop():
 
     # 第三步：选择支撑点序号
     pivot_selector_name, pivot_selector_func = select_option("支撑点选择算法", PIVOT_SELECTORS)
-    pivot_selector = pivot_selector_func()
+    pivot_selector = pivot_selector_func(distance_func)
     print(f"选择的支撑点策略是：{pivot_selector_name}")
 
     # 第四步：选择索引结构并构建索引，同时确定查询算法
