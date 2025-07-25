@@ -17,6 +17,8 @@ class PivotTable:
         
         # 使用支撑点选择器选择支撑点
         self.pivots, self.pivot_data = pivot_selector.select(data, pivot_k, "PivotTable叶子节点")
+        if self.pivot_data is None:
+            self.pivot_data = []
         
         # 计算所有数据点到支撑点的距离
         self.distance = [

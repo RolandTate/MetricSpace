@@ -3,6 +3,8 @@ from Algorithm.PivotSelection.SelectorCore import PivotSelector
 
 class ManualPivotSelector(PivotSelector):
     def select(self, data: list, k: int, node_name: str = "") -> tuple[list, list]:
+        if k >= len(data):
+            return list(data), None
         if node_name:
             print(f"\n=== 为节点 '{node_name}' 选择支撑点 ===")
         else:
