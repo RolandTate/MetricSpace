@@ -1,8 +1,4 @@
-import random
-import numpy as np
-from .SelectorCore import PivotSelector
-from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
-from Core.Data.VectorData import VectorData
+from Algorithm.SelectorCore import PivotSelector
 from .RandSelection import RandomPivotSelector
 from .FarthestFirstTraversalSelection import FarthestFirstTraversalSelector
 from .MaxVarianceSelection import MaxVariancePivotSelector
@@ -135,7 +131,8 @@ class IncrementalSamplingPivotSelector(PivotSelector):
                 pivots_indices.append(best_index)
 
         if len(pivots_indices) != pivots_num:
-            raise ValueError(f"在{node_name}中，IncrementalSamplingSelection设定半径过大，未选择足够支撑点，所需支撑点数量为{pivots_num}，实际选择数量为{len(pivots_indices)}")
+            print(data)
+            raise ValueError(f"在{node_name}中，IncrementalSamplingSelection设定半径过大，未选择足够支撑点，数据量为{len(data)}，所需支撑点数量为{pivots_num}，实际选择数量为{len(pivots_indices)}，候选集大小为{len(candidate_set)}")
         # 构造剩余数据
         remaining_indices = [i for i in range(len(data)) if i not in pivots_indices]
         pivots = [data[i] for i in pivots_indices]
