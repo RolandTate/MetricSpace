@@ -6,16 +6,20 @@ class FarthestFirstTraversalSelector(PivotSelector):
     def __init__(self, distance_function):
         self.distance_function = distance_function
 
-    def select(self, data, k, node_name="") -> tuple[list, list]:
+    def select(self, data, k, node_name="", index: bool = False) -> tuple[list, list]:
         """
         使用Farthest-First-Traversal算法选择支撑点
 
         :param data: 数据点集合
         :param k: 需要选择的支撑点个数
-        :return: (pivots, pivots_indices): 选择的支撑点列表及其索引
+        :param node_name: 当前节点名字（可选）
+        :param index: 是否返回索引
+        :return: (pivots, remaining): 选择的支撑点列表和剩余数据点列表，或索引
         """
         if k >= len(data):
-            return list(data), None
+            if index:
+                return list(range(len(data))), []
+            return list(data), []
 
         # 随机选择第一个支撑点的索引
         first_idx = random.randint(0, len(data) - 1)
@@ -43,5 +47,8 @@ class FarthestFirstTraversalSelector(PivotSelector):
                 pivots_indices.append(selected_idx)
                 pivots.append(data[selected_idx])
 
+        if index:
+            remaining_indices = [i for i in range(len(data)) if i not in pivots_indices]
+            return pivots_indices, remaining_indices
         remaining_data = [data[i] for i in range(len(data)) if i not in pivots_indices]
         return pivots, remaining_data
