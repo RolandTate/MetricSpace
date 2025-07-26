@@ -28,7 +28,6 @@ def radius_sensitive_evaluation(evaluation_set, distance_function, pivot_set, r)
                     VectorData(np.array(x_projection)),
                     VectorData(np.array(y_projection))
                 )
-                print(chebyshev_distance)
                 if chebyshev_distance >= r:
                     count += 1
     return count
