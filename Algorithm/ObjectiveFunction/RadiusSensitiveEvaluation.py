@@ -21,13 +21,14 @@ def radius_sensitive_evaluation(evaluation_set, distance_function, pivot_set, r)
 
     # 计算满足切比雪夫距离大于等于 r 的点对数量
     count = 0
-    for i, x_projection in enumerate(projected_points):
-        for j, y_projection in enumerate(projected_points):
-            if i != j:  # 避免点对自身的计算
-                chebyshev_distance = Chebyshev_distance.compute(
-                    VectorData(np.array(x_projection)),
-                    VectorData(np.array(y_projection))
-                )
-                if chebyshev_distance >= r:
-                    count += 1
+    n = len(projected_points)
+    for i in range(n):
+        for j in range(i + 1, n):  # 只计算 j > i 的点对
+            chebyshev_distance = Chebyshev_distance.compute(
+                VectorData(np.array(projected_points[i])),
+                VectorData(np.array(projected_points[j]))
+            )
+            if chebyshev_distance >= r:
+                count += 1
+
     return count
