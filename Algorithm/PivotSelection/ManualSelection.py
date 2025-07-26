@@ -1,4 +1,4 @@
-from Algorithm.PivotSelection.SelectorCore import PivotSelector
+from Algorithm.SelectorCore import PivotSelector
 
 
 class ManualPivotSelector(PivotSelector):

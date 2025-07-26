@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from .SelectorCore import PivotSelector
+from Algorithm.SelectorCore import PivotSelector
 
 class FarthestFirstTraversalSelector(PivotSelector):
     def __init__(self, distance_function):

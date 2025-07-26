@@ -1,5 +1,4 @@
-from Algorithm.PivotSelection.SelectorCore import PivotSelector
-from Core.MetricSpaceCore import MetricSpaceData, DistanceFunction
+from Algorithm.SelectorCore import PivotSelector
 from Index.Structure.PivotTable import PivotTable
 
 

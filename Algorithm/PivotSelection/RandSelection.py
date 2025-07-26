@@ -1,5 +1,5 @@
 import random
-from Algorithm.PivotSelection.SelectorCore import PivotSelector
+from Algorithm.SelectorCore import PivotSelector
 
 
 class RandomPivotSelector(PivotSelector):

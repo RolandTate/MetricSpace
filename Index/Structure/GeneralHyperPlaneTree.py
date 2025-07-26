@@ -1,5 +1,5 @@
 # GHT 树内部节点类
-from Algorithm.PivotSelection.SelectorCore import PivotSelector
+from Algorithm.SelectorCore import PivotSelector
 from Index.Structure.PivotTable import PivotTable
 from Core.MetricSpaceCore import MetricSpaceData
 

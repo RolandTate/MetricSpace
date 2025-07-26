@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from Algorithm.PivotSelection.SelectorCore import PivotSelector
+from Algorithm.SelectorCore import PivotSelector
 
 
 class MaxVariancePivotSelector(PivotSelector):
