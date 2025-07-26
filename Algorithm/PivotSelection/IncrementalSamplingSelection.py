@@ -6,40 +6,7 @@ from Core.Data.VectorData import VectorData
 from .RandSelection import RandomPivotSelector
 from .FarthestFirstTraversalSelection import FarthestFirstTraversalSelector
 from .MaxVarianceSelection import MaxVariancePivotSelector
-
-
-def radius_sensitive_evaluation(evaluation_set, distance_function, pivot_set, r):
-    """
-    半径敏感的目标函数，计算在支撑点空间中，满足切比雪夫距离大于等于 r 的点对数量。
-
-    :param evaluation_set: 用于评价的点集合
-    :param distance_function: 距离函数
-    :param pivot_set: 当前的支撑点集合
-    :param r: 半径阈值
-    :return: 满足条件的点对数量
-    """
-    Chebyshev_distance = MinkowskiDistance(float('inf'))
-
-    # 投影到支撑点空间
-    projected_points = [
-        [distance_function.compute(x, pivot) for pivot in pivot_set] for x in evaluation_set
-    ]
-
-    # 计算满足切比雪夫距离大于等于 r 的点对数量
-    count = 0
-    for i, x_projection in enumerate(projected_points):
-        for j, y_projection in enumerate(projected_points):
-            if i != j:  # 避免点对自身的计算
-                # 直接一行创建VectorData对象
-                chebyshev_distance = Chebyshev_distance.compute(
-                    VectorData(np.array(x_projection)),
-                    VectorData(np.array(y_projection))
-                )
-                if chebyshev_distance >= r:
-                    count += 1
-    return count
-
-
+from Algorithm.ObjectiveFunction.RadiusSensitiveEvaluation import radius_sensitive_evaluation
 
 
 
@@ -58,7 +25,25 @@ class IncrementalSamplingPivotSelector(PivotSelector):
         self.evaluation_size = int(input("请输入评估集合大小（例如 100）: "))
         self.radius_threshold = float(input("请输入半径阈值（例如 0.01）: "))
         
-        # 选择候选选择器
+        # 选择目标函数
+        print("\n请选择目标函数:")
+        # 可扩展更多目标函数
+        OBJECTIVE_FUNCTIONS = {
+            "半径敏感目标函数": radius_sensitive_evaluation
+        }
+        for i, key in enumerate(OBJECTIVE_FUNCTIONS.keys()):
+            print(f"{i}. {key}")
+        while True:
+            try:
+                choice = int(input("输入目标函数编号："))
+                if 0 <= choice < len(OBJECTIVE_FUNCTIONS):
+                    self.objective_function = list(OBJECTIVE_FUNCTIONS.values())[choice]
+                    break
+            except ValueError:
+                pass
+            print("无效输入，请重新输入。")
+        
+        # 选择候选集选择器
         print("\n请选择候选集选择器:")
         candidate_options = {
             "随机选择": RandomPivotSelector(seed=42),
@@ -77,7 +62,7 @@ class IncrementalSamplingPivotSelector(PivotSelector):
                 pass
             print("无效输入，请重新输入。")
         
-        # 选择评估选择器
+        # 选择评估集选择器
         print("\n请选择评估集选择器:")
         evaluation_options = {
             "随机选择": RandomPivotSelector(seed=42),
@@ -133,7 +118,7 @@ class IncrementalSamplingPivotSelector(PivotSelector):
                 current_pivot_set = [data[i] for i in current_pivot_indices]
 
                 # 计算候选点的评价值
-                value = radius_sensitive_evaluation(
+                value = self.objective_function(
                     evaluation_set, 
                     self.distance_function, 
                     current_pivot_set, 
@@ -153,4 +138,4 @@ class IncrementalSamplingPivotSelector(PivotSelector):
         remaining_indices = [i for i in range(len(data)) if i not in pivots_indices]
         pivots = [data[i] for i in pivots_indices]
         remaining_data = [data[i] for i in remaining_indices]
-        return pivots, remaining_data 
+        return pivots, remaining_data
