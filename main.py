@@ -21,6 +21,7 @@ from Index.Structure.MultipleVantagePoinTree import MVPTBulkload, MVPTInternalNo
 from Index.Search.MultipleVantagePointTreeSearch import MVPTRangeSearch
 from Algorithm.PivotSelection.MaxVarianceSelection import MaxVariancePivotSelector
 from Algorithm.PivotSelection.FarthestFirstTraversalSelection import FarthestFirstTraversalSelector
+from Algorithm.PivotSelection.IncrementalSamplingSelection import IncrementalSamplingPivotSelector
 
 # 可选配置
 DATASETS = {
@@ -56,7 +57,8 @@ PIVOT_SELECTORS = {
     "手动选择支撑点": lambda _: ManualPivotSelector(),
     "随机选择支撑点": lambda _: RandomPivotSelector(seed=42),
     "最大方差选择支撑点": lambda df: MaxVariancePivotSelector(df),
-    "最远优先遍历选择支撑点": lambda df: FarthestFirstTraversalSelector(df)
+    "最远优先遍历选择支撑点": lambda df: FarthestFirstTraversalSelector(df),
+    "增量采样选择支撑点": lambda df: IncrementalSamplingPivotSelector(df)
 }
 
 INDEX_STRUCTURES = {
