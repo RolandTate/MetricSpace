@@ -100,7 +100,7 @@ class IncrementalSamplingPivotSelector(PivotSelector):
 
         # 迭代选择支撑点
         for _ in range(pivots_num):
-            best_value = 0  # 初始化最佳值为0
+            best_value = -1  # 初始化最佳值为0
             best_index = None  # 初始化最佳点索引
 
             # 遍历候选集合，评估每个候选点
