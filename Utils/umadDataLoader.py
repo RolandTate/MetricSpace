@@ -10,39 +10,39 @@ def load_umad_vector_data(path: str, num: int = None) -> list:
     :param num: 读取的向量个数，默认读取全部
     :return: VectorData 对象组成的列表
     """
-    # with open(path, 'r') as f:
-    #     dim, count = map(int, f.readline().split())
-    #     if num is None or num > count:
-    #         num = count
-    #
-    #     seen = set()
-    #     vectors = []
-    #     for _ in range(num):
-    #         line = f.readline()
-    #         vector = np.array(list(map(float, line.strip().split())))
-    #         vectors.append(VectorData(vector))
-
     with open(path, 'r') as f:
         dim, count = map(int, f.readline().split())
-
         if num is None or num > count:
             num = count
 
         seen = set()
         vectors = []
-
-        while len(vectors) < num:
+        for _ in range(num):
             line = f.readline()
-            if not line:
-                break  # 文件读完了
             vector = np.array(list(map(float, line.strip().split())))
-            key = vector.tobytes()  # 用 byte 表示唯一性
-            if key not in seen:
-                seen.add(key)
-                vectors.append(VectorData(vector))
+            vectors.append(VectorData(vector))
 
-        if len(vectors) < num:
-            raise ValueError(f"去重后仅剩 {len(vectors)} 条数据，无法满足请求数量 {num}。请减少加载数量或使用更大数据集。")
+    # with open(path, 'r') as f:
+    #     dim, count = map(int, f.readline().split())
+    #
+    #     if num is None or num > count:
+    #         num = count
+    #
+    #     seen = set()
+    #     vectors = []
+    #
+    #     while len(vectors) < num:
+    #         line = f.readline()
+    #         if not line:
+    #             break  # 文件读完了
+    #         vector = np.array(list(map(float, line.strip().split())))
+    #         key = vector.tobytes()  # 用 byte 表示唯一性
+    #         if key not in seen:
+    #             seen.add(key)
+    #             vectors.append(VectorData(vector))
+    #
+    #     if len(vectors) < num:
+    #         raise ValueError(f"去重后仅剩 {len(vectors)} 条数据，无法满足请求数量 {num}。请减少加载数量或使用更大数据集。")
 
     return vectors
 
