@@ -85,7 +85,7 @@ if __name__ == "__main__":
     else:
         # 检查是否存在配置文件
         try:
-            run_with_config("full_test.json", DATASETS, DISTANCES_Vector, DISTANCES_String, 
+            run_with_config("./config/sample_config.json", DATASETS, DISTANCES_Vector, DISTANCES_String,
                           PIVOT_SELECTORS, INDEX_STRUCTURES)
         except Exception as e:
             print(f"配置运行失败: {e}")
