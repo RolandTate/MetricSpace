@@ -11,12 +11,27 @@ DEFAULT_CONFIG = {
     
     # 距离函数配置 (根据数据类型自动选择)
     "distance_function": {
-        "vector": "欧几里得距离 (t=2)",  # 可选: "曼哈顿距离 (t=1)", "欧几里得距离 (t=2)", "切比雪夫距离 (t=∞)"
-        "string": "编辑距离"  # 可选: "海明距离", "编辑距离", "加权编辑距离（现默认使用mPAM）"
+        "vector": "Euclidean Distance",  # 可选: "Manhattan Distance", "Euclidean Distance", "Chebyshev Distance"
+        "string": "Edit Distance"  # 可选: "Hamming Distance", "Edit Distance", "Weighted Edit Distance"
     },
     
-    # 支撑点选择算法
-    "pivot_selector": "随机选择支撑点",  # 可选: "手动选择支撑点", "随机选择支撑点", "最大方差选择支撑点", "最远优先遍历选择支撑点", "增量采样选择支撑点"
+    # 支撑点选择算法配置
+    "pivot_selector": {
+        "name": "Random",  # 可选: "Manual", "Random", "Max Variance", "Farthest First Traversal", "Incremental Sampling"
+        "params": {
+            # 随机选择支撑点参数
+            "seed": 42,
+            
+            # 增量采样选择支撑点参数
+            "candidate_size": 10,
+            "evaluation_size": 100,
+            "objective_function": "Radius-sensitive",  # 可选: "Radius-sensitive", "Variance"
+            "radius_threshold": 0.01,  # Radius-sensitive目标函数的参数
+            "variance_weight": 1.0,    # Variance目标函数的参数
+            "candidate_selector": "Farthest First Traversal",  # 可选: "Random", "Max Variance", "Farthest First Traversal"
+            "evaluation_selector": "Random"  # 可选: "Random", "Max Variance", "Farthest First Traversal"
+        }
+    },
     
     # 索引结构配置
     "index_structure": {
@@ -48,6 +63,7 @@ DEFAULT_CONFIG = {
     "exit_after_queries": False  # 是否在完成预设查询后退出
 }
 
+
 def load_config(config_path="config.json"):
     """加载配置文件"""
     try:
@@ -57,10 +73,12 @@ def load_config(config_path="config.json"):
         print(f"配置文件 {config_path} 不存在，使用默认配置")
         return DEFAULT_CONFIG.copy()
 
+
 def save_config(config, config_path="config.json"):
     """保存配置文件"""
     with open(config_path, 'w', encoding='utf-8') as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
+
 
 def create_sample_config():
     """创建示例配置文件"""
@@ -91,8 +109,47 @@ def create_sample_config():
         }
     }
     
-    save_config(config, "sample_config.json")
-    print("示例配置文件已保存为 sample_config.json")
+    # 支撑点选择器配置示例
+    config["pivot_selector_examples"] = {
+        "Random": {
+            "description": "简单随机选择策略",
+            "params": {"seed": 42}
+        },
+        "Max Variance": {
+            "description": "基于距离方差的最优选择",
+            "params": {}
+        },
+        "Farthest First Traversal": {
+            "description": "贪心算法选择",
+            "params": {}
+        },
+        "Incremental Sampling (Radius-sensitive)": {
+            "description": "渐进式选择策略 - 半径敏感目标函数",
+            "params": {
+                "candidate_size": 10,
+                "evaluation_size": 100,
+                "objective_function": "Radius-sensitive",
+                "radius_threshold": 0.01,  # Radius-sensitive目标函数的参数
+                "candidate_selector": "Random",
+                "evaluation_selector": "Random"
+            }
+        },
+        "Incremental Sampling (Variance)": {
+            "description": "渐进式选择策略 - 方差目标函数",
+            "params": {
+                "candidate_size": 10,
+                "evaluation_size": 100,
+                "objective_function": "Variance",
+                "variance_weight": 1.0,  # Variance目标函数的参数
+                "candidate_selector": "Random",
+                "evaluation_selector": "Random"
+            }
+        }
+    }
+    
+    save_config(config, "./config/sample_config.json")
+    print("示例配置文件已保存为 ./config/sample_config.json")
+
 
 def generate_auto_query(dataset, data_class):
     """根据数据集自动生成查询点"""
@@ -112,7 +169,8 @@ def generate_auto_query(dataset, data_class):
     else:
         return None
 
+
 if __name__ == "__main__":
     create_sample_config()
     print("配置文件创建完成！")
-    print("你可以编辑 config.json 或 sample_config.json 来自定义参数") 
+    print("你可以编辑 config.json 或 sample_config.json 来自定义参数")
