@@ -20,7 +20,7 @@ class IncrementalSamplingPivotSelector(PivotSelector):
             self.candidate_size = config.get("candidate_size", 10)
             self.evaluation_size = config.get("evaluation_size", 100)
             objective_function_name = config.get("objective_function", "Radius-sensitive")
-            candidate_selector_name = config.get("candidate_selector", "Random")
+            candidate_selector_name = config.get("candidate_selector", "Farthest First Traversal")
             evaluation_selector_name = config.get("evaluation_selector", "Random")
             
             # 使用工厂创建目标函数实例
@@ -28,22 +28,25 @@ class IncrementalSamplingPivotSelector(PivotSelector):
                 objective_function_name, 
                 **config.get("params", {})
             )
+            print(f'Incremental Sampling Pivot Selector use {objective_function_name} as objective function')
             
             # 创建候选选择器
             candidate_selector_map = {
-                "Random": RandomPivotSelector(seed=42),
+                "Random": RandomPivotSelector(),
                 "Max Variance": MaxVariancePivotSelector(distance_function),
                 "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
             }
             self.candidate_selector = candidate_selector_map.get(candidate_selector_name, FarthestFirstTraversalSelector(distance_function))
+            print(f'Incremental Sampling Pivot Selector use {candidate_selector_name} Selector as candidate selector')
             
             # 创建评估选择器
             evaluation_selector_map = {
-                "Random": RandomPivotSelector(seed=42),
+                "Random": RandomPivotSelector(),
                 "Max Variance": MaxVariancePivotSelector(distance_function),
                 "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
             }
             self.evaluation_selector = evaluation_selector_map.get(evaluation_selector_name, RandomPivotSelector(seed=42))
+            print(f'Incremental Sampling Pivot Selector use {evaluation_selector_name} Selector as candidate selector')
             
         else:
             # 用户输入参数（保持原有逻辑）
