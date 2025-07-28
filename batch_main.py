@@ -12,7 +12,7 @@ from config import save_config, DEFAULT_CONFIG
 
 def create_and_run_test(test_name, config):
     """创建配置并运行测试"""
-    config_file = f"{test_name}.json"
+    config_file = f"./config/{test_name}.json"
     save_config(config, config_file)
     
     print(f"\n=== 运行 {test_name} 测试 ===")
@@ -87,7 +87,7 @@ def run_all_tests():
         "show_results": False,  # 是否显示查询结果
         "exit_after_queries": False  # 是否在完成预设查询后退出
     })
-    pivot_selection_comparison_tests.append(("mao, query radius: 0.02", vector_test_texas_002_mao))
+    pivot_selection_comparison_tests.append(("mao, query radius 0.02", vector_test_texas_002_mao))
 
     vector_test_texas_002_bustos = vector_test_texas_002_mao.copy()
     vector_test_texas_002_bustos.update({
@@ -103,19 +103,19 @@ def run_all_tests():
             }
         }
     })
-    pivot_selection_comparison_tests.append(("bustos, query radius: 0.02", vector_test_texas_002_bustos))
+    pivot_selection_comparison_tests.append(("bustos, query radius 0.02", vector_test_texas_002_bustos))
 
     vector_test_texas_004_mao = vector_test_texas_002_mao.copy()
     vector_test_texas_004_mao.update({
         "batch_radius": 0.04
     })
-    pivot_selection_comparison_tests.append(("mao, query radius: 0.04", vector_test_texas_004_mao))
+    pivot_selection_comparison_tests.append(("mao, query radius 0.04", vector_test_texas_004_mao))
 
     vector_test_texas_004_bustos = vector_test_texas_002_bustos.copy()
     vector_test_texas_004_bustos.update({
         "batch_radius": 0.04
     })
-    pivot_selection_comparison_tests.append(("bustos, query radius: 0.04", vector_test_texas_004_bustos))
+    pivot_selection_comparison_tests.append(("bustos, query radius 0.04", vector_test_texas_004_bustos))
     
     # 运行测试
     print("🚀 开始运行 MetricSpace 批处理测试")
