@@ -4,7 +4,7 @@
 
 ### 方法1: 一键批处理测试
 ```bash
-python run_batch.py
+python batch_main.py
 ```
 这将自动运行所有预设测试，包括：
 - 向量数据测试 (hawii数据集)

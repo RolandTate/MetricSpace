@@ -1,5 +1,5 @@
 from .RadiusSensitiveEvaluation import RadiusSensitiveEvaluation
-from .VarianceEvaluation import VarianceEvaluation
+from .MaximumMeanEvaluation import MaximumMeanEvaluation
 
 class ObjectiveFunctionFactory:
     """
@@ -19,9 +19,8 @@ class ObjectiveFunctionFactory:
         if objective_function_name == "Radius-sensitive":
             radius_threshold = kwargs.get("radius_threshold", 0.01)
             return RadiusSensitiveEvaluation(radius_threshold=radius_threshold)
-        elif objective_function_name == "Variance":
-            variance_weight = kwargs.get("variance_weight", 1.0)
-            return VarianceEvaluation(variance_weight=variance_weight)
+        elif objective_function_name == "Maximum mean":
+            return MaximumMeanEvaluation()
         else:
             # 默认使用Radius-sensitive
             radius_threshold = kwargs.get("radius_threshold", 0.01)
