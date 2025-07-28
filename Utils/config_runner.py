@@ -1,5 +1,7 @@
 import json
 import numpy as np
+from tqdm import tqdm
+
 from config import load_config
 
 # 添加必要的导入
@@ -175,7 +177,7 @@ def run_with_config(config_path="full_test.json",
             print(f"查询失败: {e}")
     
     # 第六步：根据配置决定进入哪种模式
-    if config.get("run_mode") == "interactive" and not config.get("exit_after_queries", False):
+    if config.get("run_mode") == "interactive":
         print("\n=== 进入交互模式 ===")
         interactive_query_loop(index, query_func, distance_func, dataset, data_class)
     elif config.get("run_mode") == "batch_query_statistics":
@@ -183,8 +185,6 @@ def run_with_config(config_path="full_test.json",
         batch_radius = config.get("batch_radius")
         batch_query_num = config.get("batch_query_num")
         batch_query_statistics_loop(index, query_func, distance_func, dataset, batch_radius, batch_query_num)
-    elif config.get("run_mode") == "batch":
-        print("\n=== 批处理模式完成 ===")
     else:
         print("\n=== 运行完成 ===")
     
@@ -255,7 +255,7 @@ def batch_query_statistics_loop(index, query_func, distance_func, dataset, batch
     n = min(n, len(dataset))
 
     total_calc = 0
-    for i in range(n):
+    for i in tqdm(range(n)):
         query_obj = dataset[i]
         try:
             _, calc_count = query_func(index, query_obj, distance_func, radius)
@@ -264,3 +264,4 @@ def batch_query_statistics_loop(index, query_func, distance_func, dataset, batch
             print(f"第 {i} 个查询失败: {e}")
     avg_calc = total_calc / n if n > 0 else 0
     print(f"\n批量查询完成，平均距离计算次数: {avg_calc:.2f}，总查询数: {n}")
+    print("\n=== 批量查询模式完成 ===")
