@@ -25,7 +25,7 @@ DEFAULT_CONFIG = {
             # 增量采样选择支撑点参数
             "candidate_size": 10,
             "evaluation_size": 100,
-            "objective_function": "Radius-sensitive",  # 可选: "Radius-sensitive", "Variance"
+            "objective_function": "Radius-sensitive",  # 可选: "Radius-sensitive", "Maximum mean"
             "radius_threshold": 0.01,  # Radius-sensitive目标函数的参数
             "variance_weight": 1.0,    # Variance目标函数的参数
             "candidate_selector": "Farthest First Traversal",  # 可选: "Random", "Max Variance", "Farthest First Traversal"
@@ -57,7 +57,9 @@ DEFAULT_CONFIG = {
     ],
     
     # 运行模式
-    "run_mode": "interactive",  # "interactive" 或 "batch"
+    "run_mode": "batch_query_statistics",  # "interactive" 或 "batch" 或 "batch_query_statistics"
+    "batch_radius": 0.02,
+    "batch_query_num": 20,
     "auto_generate_queries": True,  # 是否自动生成查询点
     "show_results": True,  # 是否显示查询结果
     "exit_after_queries": False  # 是否在完成预设查询后退出
