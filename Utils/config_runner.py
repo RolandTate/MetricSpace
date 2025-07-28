@@ -1,6 +1,5 @@
 import json
 import numpy as np
-from tqdm import tqdm
 
 from config import load_config
 
@@ -255,7 +254,7 @@ def batch_query_statistics_loop(index, query_func, distance_func, dataset, batch
     n = min(n, len(dataset))
 
     total_calc = 0
-    for i in tqdm(range(n)):
+    for i in range(n):
         query_obj = dataset[i]
         try:
             _, calc_count = query_func(index, query_obj, distance_func, radius)

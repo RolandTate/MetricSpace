@@ -21,7 +21,7 @@ def create_and_run_test(test_name, config):
     try:
         # 运行测试
         result = subprocess.run([sys.executable, "config_main.py", config_file],
-                              capture_output=False, text=True, encoding="utf-8")
+                              capture_output=True, text=True, encoding="utf-8")
         
         if result.returncode == 0:
             print(f"✅ {test_name} 测试成功完成")
@@ -51,7 +51,7 @@ def run_all_tests():
 
     vector_test_texas_002_mao = DEFAULT_CONFIG.copy()
     vector_test_texas_002_mao.update({
-        "dataset": {"name": "uniformvector-20dim-1m", "load_count": 300},
+        "dataset": {"name": "uniformvector-20dim-1m", "load_count": 100},
         "distance_function": {"vector": "Euclidean Distance", "string": "Edit Distance"},
         "pivot_selector": {
             "name": "Incremental Sampling",
