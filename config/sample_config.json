@@ -1,0 +1,35 @@
+{
+  "dataset": {
+    "name": "texas",
+    "load_count": 1000
+  },
+  "distance_function": {
+    "vector": "Euclidean Distance",
+    "string": "Edit Distance"
+  },
+  "pivot_selector": {
+    "name": "Incremental Sampling",
+    "params": {
+      "seed": 42,
+      "candidate_size": 10,
+      "evaluation_size": 100,
+      "objective_function": "Radius-sensitive",
+      "radius_threshold": 0.01,
+      "candidate_selector": "Farthest First Traversal",
+      "evaluation_selector": "Random"
+    }
+  },
+  "index_structure": {
+    "name": "Multiple Vantage Point Tree",
+    "max_leaf_size": 20,
+    "pivot_k": 1,
+    "mvpt_regions": 3,
+    "mvpt_internal_pivots": 3
+  },
+  "queries": [],
+  "run_mode": "interactive",
+  "batch_radius": 0.02,
+  "batch_query_num": 20,
+  "auto_generate_queries": true,
+  "show_results": true
+}
