@@ -120,7 +120,8 @@ def run_with_config(config_path="full_test.json",
     
     # 第五步：执行预设查询
     queries = config["queries"]
-    print(f"\n=== 执行 {len(queries)} 个预设查询 ===")
+    if len(queries) > 0:
+        print(f"\n=== 执行 {len(queries)} 个预设查询 ===")
     
     for i, query_config in enumerate(queries, 1):
         radius = query_config["radius"]
@@ -173,10 +174,15 @@ def run_with_config(config_path="full_test.json",
         except Exception as e:
             print(f"查询失败: {e}")
     
-    # 第六步：根据配置决定是否进入交互模式
+    # 第六步：根据配置决定进入哪种模式
     if config.get("run_mode") == "interactive" and not config.get("exit_after_queries", False):
         print("\n=== 进入交互模式 ===")
         interactive_query_loop(index, query_func, distance_func, dataset, data_class)
+    elif config.get("run_mode") == "batch_query_statistics":
+        print("\n=== 进入批量查询统计模式 ===")
+        batch_radius = config.get("batch_radius")
+        batch_query_num = config.get("batch_query_num")
+        batch_query_statistics_loop(index, query_func, distance_func, dataset, batch_radius, batch_query_num)
     elif config.get("run_mode") == "batch":
         print("\n=== 批处理模式完成 ===")
     else:
@@ -240,3 +246,21 @@ def interactive_query_loop(index, query_func, distance_func, dataset, data_class
             print(f"查询失败: {e}")
 
     print("\n查询结束，感谢使用！")
+
+
+def batch_query_statistics_loop(index, query_func, distance_func, dataset, batch_radius, batch_query_num):
+    """批量查询距离计算次数统计，不输出具体结果"""
+    radius = float(batch_radius)
+    n = int(batch_query_num) if batch_query_num is not None else len(dataset)
+    n = min(n, len(dataset))
+
+    total_calc = 0
+    for i in range(n):
+        query_obj = dataset[i]
+        try:
+            _, calc_count = query_func(index, query_obj, distance_func, radius)
+            total_calc += calc_count
+        except Exception as e:
+            print(f"第 {i} 个查询失败: {e}")
+    avg_calc = total_calc / n if n > 0 else 0
+    print(f"\n批量查询完成，平均距离计算次数: {avg_calc:.2f}，总查询数: {n}")
