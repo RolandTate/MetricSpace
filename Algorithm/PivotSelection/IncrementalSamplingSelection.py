@@ -2,80 +2,115 @@ from Algorithm.SelectorCore import PivotSelector
 from .RandSelection import RandomPivotSelector
 from .FarthestFirstTraversalSelection import FarthestFirstTraversalSelector
 from .MaxVarianceSelection import MaxVariancePivotSelector
-from Algorithm.ObjectiveFunction.RadiusSensitiveEvaluation import radius_sensitive_evaluation
-
+from Algorithm.ObjectiveFunction.ObjectiveFunctionFactory import ObjectiveFunctionFactory
 
 
 class IncrementalSamplingPivotSelector(PivotSelector):
-    def __init__(self, distance_function):
+    def __init__(self, distance_function, config=None):
         """
         初始化增量采样支撑点选择器
         
         :param distance_function: 距离函数
+        :param config: 配置字典，包含所有参数
         """
         self.distance_function = distance_function
         
-        # 用户输入参数
-        print("\n=== 增量采样支撑点选择器配置 ===")
-        self.candidate_size = int(input("请输入候选集合大小（例如 10）: "))
-        self.evaluation_size = int(input("请输入评估集合大小（例如 100）: "))
-        self.radius_threshold = float(input("请输入半径阈值（例如 0.01）: "))
-        
-        # 选择目标函数
-        print("\n请选择目标函数:")
-        # 可扩展更多目标函数
-        OBJECTIVE_FUNCTIONS = {
-            "半径敏感目标函数": radius_sensitive_evaluation
-        }
-        for i, key in enumerate(OBJECTIVE_FUNCTIONS.keys()):
-            print(f"{i}. {key}")
-        while True:
-            try:
-                choice = int(input("输入目标函数编号："))
-                if 0 <= choice < len(OBJECTIVE_FUNCTIONS):
-                    self.objective_function = list(OBJECTIVE_FUNCTIONS.values())[choice]
-                    break
-            except ValueError:
-                pass
-            print("无效输入，请重新输入。")
-        
-        # 选择候选集选择器
-        print("\n请选择候选集选择器:")
-        candidate_options = {
-            "随机选择": RandomPivotSelector(seed=42),
-            "最远优先遍历": FarthestFirstTraversalSelector(distance_function),
-            "最大方差": MaxVariancePivotSelector(distance_function)
-        }
-        for i, key in enumerate(candidate_options.keys()):
-            print(f"{i}. {key}")
-        while True:
-            try:
-                choice = int(input("输入候选选择器编号："))
-                if 0 <= choice < len(candidate_options):
-                    self.candidate_selector = list(candidate_options.values())[choice]
-                    break
-            except ValueError:
-                pass
-            print("无效输入，请重新输入。")
-        
-        # 选择评估集选择器
-        print("\n请选择评估集选择器:")
-        evaluation_options = {
-            "随机选择": RandomPivotSelector(seed=42),
-            "最远优先遍历": FarthestFirstTraversalSelector(distance_function),
-            "最大方差": MaxVariancePivotSelector(distance_function)
-        }
-        for i, key in enumerate(evaluation_options.keys()):
-            print(f"{i}. {key}")
-        while True:
-            try:
-                choice = int(input("输入评估选择器编号："))
-                if 0 <= choice < len(evaluation_options):
-                    self.evaluation_selector = list(evaluation_options.values())[choice]
-                    break
-            except ValueError:
-                pass
-            print("无效输入，请重新输入。")
+        if config:
+            # 从配置中读取参数
+            self.candidate_size = config.get("candidate_size", 10)
+            self.evaluation_size = config.get("evaluation_size", 100)
+            objective_function_name = config.get("objective_function", "Radius-sensitive")
+            candidate_selector_name = config.get("candidate_selector", "Random")
+            evaluation_selector_name = config.get("evaluation_selector", "Random")
+            
+            # 使用工厂创建目标函数实例
+            self.objective_function = ObjectiveFunctionFactory.create_objective_function(
+                objective_function_name, 
+                **config.get("params", {})
+            )
+            
+            # 创建候选选择器
+            candidate_selector_map = {
+                "Random": RandomPivotSelector(seed=42),
+                "Max Variance": MaxVariancePivotSelector(distance_function),
+                "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
+            }
+            self.candidate_selector = candidate_selector_map.get(candidate_selector_name, FarthestFirstTraversalSelector(distance_function))
+            
+            # 创建评估选择器
+            evaluation_selector_map = {
+                "Random": RandomPivotSelector(seed=42),
+                "Max Variance": MaxVariancePivotSelector(distance_function),
+                "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
+            }
+            self.evaluation_selector = evaluation_selector_map.get(evaluation_selector_name, RandomPivotSelector(seed=42))
+            
+        else:
+            # 用户输入参数（保持原有逻辑）
+            print("\n=== 增量采样支撑点选择器配置 ===")
+            self.candidate_size = int(input("请输入候选集合大小（例如 10）: "))
+            self.evaluation_size = int(input("请输入评估集合大小（例如 100）: "))
+            radius_threshold = float(input("请输入半径阈值（例如 0.01）: "))
+
+            # 选择目标函数
+            print("\n请选择目标函数:")
+            available_functions = ObjectiveFunctionFactory.get_available_objective_functions()
+            for i, func_name in enumerate(available_functions):
+                print(f"{i}. {func_name}")
+            
+            while True:
+                try:
+                    choice = int(input("输入目标函数编号："))
+                    if 0 <= choice < len(available_functions):
+                        selected_function = available_functions[choice]
+                        if selected_function == "Radius-sensitive":
+                            self.objective_function = ObjectiveFunctionFactory.create_objective_function(
+                                selected_function, radius_threshold=radius_threshold
+                            )
+                        else:
+                            self.objective_function = ObjectiveFunctionFactory.create_objective_function(selected_function)
+                        break
+                except ValueError:
+                    pass
+                print("无效输入，请重新输入。")
+
+            # 选择候选集选择器
+            print("\n请选择候选集选择器:")
+            candidate_options = {
+                "Random": RandomPivotSelector(seed=42),
+                "Max Variance": MaxVariancePivotSelector(distance_function),
+                "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
+            }
+            for i, key in enumerate(candidate_options.keys()):
+                print(f"{i}. {key}")
+            while True:
+                try:
+                    choice = int(input("输入候选选择器编号："))
+                    if 0 <= choice < len(candidate_options):
+                        self.candidate_selector = list(candidate_options.values())[choice]
+                        break
+                except ValueError:
+                    pass
+                print("无效输入，请重新输入。")
+
+            # 选择评估集选择器
+            print("\n请选择评估集选择器:")
+            evaluation_options = {
+                "Random": RandomPivotSelector(seed=42),
+                "Max Variance": MaxVariancePivotSelector(distance_function),
+                "Farthest First Traversal": FarthestFirstTraversalSelector(distance_function)
+            }
+            for i, key in enumerate(evaluation_options.keys()):
+                print(f"{i}. {key}")
+            while True:
+                try:
+                    choice = int(input("输入评估选择器编号："))
+                    if 0 <= choice < len(evaluation_options):
+                        self.evaluation_selector = list(evaluation_options.values())[choice]
+                        break
+                except ValueError:
+                    pass
+                print("无效输入，请重新输入。")
 
     def select(self, data, pivots_num, node_name="") -> tuple[list, list]:
         """
@@ -117,8 +152,7 @@ class IncrementalSamplingPivotSelector(PivotSelector):
                 value = self.objective_function(
                     evaluation_set, 
                     self.distance_function, 
-                    current_pivot_set, 
-                    self.radius_threshold
+                    current_pivot_set
                 )
 
                 # 更新最佳点
