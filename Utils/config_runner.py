@@ -1,7 +1,6 @@
-import json
 import numpy as np
 
-from config import load_config
+from Utils.config import load_config
 
 # 添加必要的导入
 from Index.Structure.PivotTable import PivotTable

@@ -147,8 +147,8 @@ def create_sample_config():
     #     }
     # }
     
-    save_config(config, "./config/sample_config.json")
-    print("示例配置文件已保存为 ./config/sample_config.json")
+    save_config(config, "../config/sample_config.json")
+    print("示例配置文件已保存为 ../config/sample_config.json")
 
 
 def generate_auto_query(dataset, data_class):
@@ -173,4 +173,4 @@ def generate_auto_query(dataset, data_class):
 if __name__ == "__main__":
     create_sample_config()
     print("配置文件创建完成！")
-    print("你可以编辑 config.json 或 sample_config.json 来自定义参数")
+    print("你可以编辑 sample_config.json 来自定义参数")

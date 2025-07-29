@@ -7,7 +7,7 @@ MetricSpace 批处理运行脚本
 import subprocess
 import sys
 import os
-from config import save_config, DEFAULT_CONFIG
+from Utils.config import save_config, DEFAULT_CONFIG
 
 
 def create_and_run_test(test_name, config):
