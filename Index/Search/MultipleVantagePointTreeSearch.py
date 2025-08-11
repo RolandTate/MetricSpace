@@ -46,8 +46,8 @@ def MVPTRangeSearch(node, query_point: MetricSpaceData, distance_function: Dista
                 break
 
             # 排除规则：如果查询球与子节点不相交
-            if (distance_VPs_q[j] + radius <= node.lower_bound[j][i] or 
-                distance_VPs_q[j] - radius >= node.upper_bound[j][i]):
+            if (distance_VPs_q[j] + radius < node.lower_bound[j][i] or
+                distance_VPs_q[j] - radius > node.upper_bound[j][i]):
                 done = True
                 break
 
