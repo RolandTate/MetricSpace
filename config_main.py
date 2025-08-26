@@ -38,7 +38,8 @@ DATASETS = {
     "uniformvector-20dim-1m": ("Datasets/Vector/uniformvector-20dim-1m.txt", load_umad_vector_data, VectorData),
     "English": ("Datasets/SISAP/strings/dictionaries/English.dic", load_umad_string_data, StringData),
     "yeast": ("Datasets/Protein/yeast.aa", load_fasta_protein_data, StringData),
-    "deep1M": ("Datasets/deep1M/deep1M_base.fvecs", load_fvecs_data, VectorData)
+    "deep1M": ("Datasets/deep1M/deep1M_base.fvecs", load_fvecs_data, VectorData),
+    "syn_256d_1M": ("Datasets/Synthetic/synthetic_256d_1M.txt", load_umad_vector_data, VectorData)
     # 示例字符串数据：
     # "示例字符串数据": ("Datasets/String/sample.txt", load_umad_string_data, StringData)
 }
