@@ -252,14 +252,22 @@ def batch_query_statistics_loop(index, query_func, distance_func, dataset, batch
     n = int(batch_query_num) if batch_query_num is not None else len(dataset)
     n = min(n, len(dataset))
 
-    total_calc = 0
+    calc_counts = []
     for i in range(n):
         query_obj = dataset[i]
         try:
             _, calc_count = query_func(index, query_obj, distance_func, radius)
-            total_calc += calc_count
+            calc_counts.append(calc_count)
         except Exception as e:
             print(f"第 {i} 个查询失败: {e}")
-    avg_calc = total_calc / n if n > 0 else 0
-    print(f"\n批量查询完成，平均距离计算次数: {avg_calc:.2f}，总查询数: {n}")
+    if len(calc_counts) > 0:
+        counts_arr = np.asarray(calc_counts, dtype=float)
+        avg_calc = float(np.mean(counts_arr))
+        var_calc = float(np.var(counts_arr))  # 总体方差（除以 N）
+        std_calc = float(np.sqrt(var_calc))
+    else:
+        avg_calc = 0.0
+        var_calc = 0.0
+        std_calc = 0.0
+    print(f"\n批量查询完成，总查询数: {len(calc_counts)}，平均距离计算次数: {avg_calc:.2f}，标准差: {std_calc:.2f}，方差: {var_calc:.2f}")
     print("\n=== 批量查询模式完成 ===")
