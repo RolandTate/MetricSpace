@@ -12,6 +12,7 @@ from Core.DistanceFunction.WeightedEditDistance import WeightedEditDistance
 from Index.Search.GeneralHyperPlaneTreeSearch import GHTRangeSearch
 from Index.Structure.GeneralHyperPlaneTree import GHTBulkload
 from Utils.umadDataLoader import load_umad_vector_data, load_umad_string_data, load_fasta_protein_data
+from Utils.fvecsDataLoader import load_fvecs_data
 from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
 from Index.Structure.PivotTable import PivotTable
 from Index.Search.PivotTableRangeSearch import PTRangeSearch
@@ -36,7 +37,8 @@ DATASETS = {
     "texas": ("Datasets/Vector/texas.txt", load_umad_vector_data, VectorData),
     "uniformvector-20dim-1m": ("Datasets/Vector/uniformvector-20dim-1m.txt", load_umad_vector_data, VectorData),
     "English": ("Datasets/SISAP/strings/dictionaries/English.dic", load_umad_string_data, StringData),
-    "yeast": ("Datasets/Protein/yeast.aa", load_fasta_protein_data, StringData)
+    "yeast": ("Datasets/Protein/yeast.aa", load_fasta_protein_data, StringData),
+    "deep1M": ("Datasets/deep1M/deep1M_base.fvecs", load_fvecs_data, VectorData)
     # 示例字符串数据：
     # "示例字符串数据": ("Datasets/String/sample.txt", load_umad_string_data, StringData)
 }
