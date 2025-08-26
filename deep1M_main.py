@@ -49,9 +49,9 @@ def run_all_tests():
 
     pivot_selection_comparison_tests = []
 
-    deep1M_test_dim256_r002_mao = DEFAULT_CONFIG.copy()
-    deep1M_test_dim256_r002_mao.update({
-        "dataset": {"name": "deep1M", "load_count": 100000},
+    deep1M_test_dim256_r093 = DEFAULT_CONFIG.copy()
+    deep1M_test_dim256_r093.update({
+        "dataset": {"name": "deep1M", "load_count": 1000},
         "distance_function": {"vector": "Euclidean Distance", "string": "Edit Distance"},
         "pivot_selector": {
             "name": "Random",
@@ -63,28 +63,28 @@ def run_all_tests():
                 "candidate_size": 20,
                 "evaluation_size": 100,
                 "objective_function": "Radius-sensitive",  # 可选: "Radius-sensitive", "Variance"
-                "radius_threshold": 0.02,  # Radius-sensitive目标函数的参数
+                "radius_threshold": 0.05,  # Radius-sensitive目标函数的参数
                 "candidate_selector": "Farthest First Traversal",
                 # 可选: "Random", "Max Variance", "Farthest First Traversal"
                 "evaluation_selector": "Random"  # 可选: "Random", "Max Variance", "Farthest First Traversal"
             }
         },
         "index_structure": {
-            "name": "Pivot Table",
-            "max_leaf_size": 100000,
-            "pivot_k": 5,
-            "mvpt_regions": 5,
-            "mvpt_internal_pivots": 5
+            "name": "Multiple Vantage Point Tree",
+            "max_leaf_size": 10,
+            "pivot_k": 1,
+            "mvpt_regions": 3,
+            "mvpt_internal_pivots": 3
         },
         # 运行模式
         "run_mode": "batch_query_statistics",  # "interactive" 或 "batch"
-        "batch_radius": 0.02,
-        "batch_query_num": 1000,
+        "batch_radius": 0.93,
+        "batch_query_num": 50,
         "auto_generate_queries": True,  # 是否自动生成查询点
         "show_results": False,  # 是否显示查询结果
         "exit_after_queries": False  # 是否在完成预设查询后退出
     })
-    pivot_selection_comparison_tests.append(("deep1M dataset test, query radius 0.02", deep1M_test_dim256_r002_mao))
+    pivot_selection_comparison_tests.append(("deep1M dataset test, query radius 0.02", deep1M_test_dim256_r093))
     
     # 运行测试
     print("🚀 开始运行 MetricSpace 批处理测试")
