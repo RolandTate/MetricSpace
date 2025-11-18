@@ -17,7 +17,7 @@ def compute_distance_matrix(data, dist_func):
 def progressive_triangle_search(query_idx, data, dist_matrix, dist_func, first_pivot=None):
     query = data[query_idx]
     n = len(data)
-    candidates = {i for i in range(n) if i != query_idx and i != first_pivot}
+    candidates = {i for i in range(n) if i != query_idx}
     all_indices = [i for i in range(n) if i != query_idx]
 
     # 构造 pivot_sequence，使 first_pivot 优先
@@ -53,7 +53,7 @@ def progressive_triangle_search(query_idx, data, dist_matrix, dist_func, first_p
         to_remove = []
         for i in bounds:
             i_lower, i_upper = bounds[i]
-            if i_lower >= d_q_p:
+            if i_lower > d_q_p:
                 to_remove.append(i)
         for i in to_remove:
             candidates.remove(i)
