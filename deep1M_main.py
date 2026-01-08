@@ -51,10 +51,10 @@ def run_all_tests():
 
     deep1M_test_dim256_r093 = DEFAULT_CONFIG.copy()
     deep1M_test_dim256_r093.update({
-        "dataset": {"name": "deep1M", "load_count": 1000},
+        "dataset": {"name": "deep1M", "load_count": 100},
         "distance_function": {"vector": "Euclidean Distance", "string": "Edit Distance"},
         "pivot_selector": {
-            "name": "Random",
+            "name": "Incremental Sampling",
             # 可选: "Manual", "Random", "Max Variance", "Farthest First Traversal", "Incremental Sampling"
             "params": {
                 # 随机选择支撑点参数
@@ -63,14 +63,14 @@ def run_all_tests():
                 "candidate_size": 20,
                 "evaluation_size": 100,
                 "objective_function": "Radius-sensitive",  # 可选: "Radius-sensitive", "Variance"
-                "radius_threshold": 0.05,  # Radius-sensitive目标函数的参数
+                "radius_threshold": 0.93,  # Radius-sensitive目标函数的参数
                 "candidate_selector": "Farthest First Traversal",
                 # 可选: "Random", "Max Variance", "Farthest First Traversal"
                 "evaluation_selector": "Random"  # 可选: "Random", "Max Variance", "Farthest First Traversal"
             }
         },
         "index_structure": {
-            "name": "Multiple Vantage Point Tree",
+            "name": "General Hyper-plane Tree",
             "max_leaf_size": 10,
             "pivot_k": 1,
             "mvpt_regions": 3,

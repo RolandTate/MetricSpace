@@ -62,3 +62,50 @@ def progressive_triangle_search(query_idx, data, dist_matrix, dist_func, first_p
     best_idx, best_dist = min(pivot_distances.items(), key=lambda x: x[1])
     return best_idx, calc_count, best_dist
 
+
+def linear_search(query_idx, data, dist_func, range_radius=None, knn_k=None, dknn_k=None):
+    """
+    使用线性扫描实现范围查询（Range Query）、kNN 与 dKNN（最远的 k 个邻居）查询。
+
+    :param query_idx: 查询对象索引
+    :param data: 数据集
+    :param dist_func: 距离函数，需提供 compute(a, b) 方法
+    :param range_radius: 范围查询半径，若为 None 则跳过范围查询
+    :param knn_k: 需要的最近邻个数，若为 None 则跳过 kNN
+    :param dknn_k: 需要的“最远邻”个数，若为 None 则跳过 dKNN
+    :return: dict，包含 calc_count、range、knn、dknn 等结果
+    """
+    query = data[query_idx]
+    distances = []
+    calc_count = 0
+
+    for idx, point in enumerate(data):
+        if idx == query_idx:
+            continue
+        d = dist_func.compute(query, point)
+        calc_count += 1
+        distances.append((idx, d))
+
+    distances.sort(key=lambda x: x[1])
+
+    result = {
+        "calc_count": calc_count,
+        "range": [],
+        "knn": [],
+        "dknn": []
+    }
+
+    if range_radius is not None:
+        result["range"] = [(idx, dist) for idx, dist in distances if dist <= range_radius]
+
+    if knn_k is not None and knn_k > 0:
+        result["knn"] = distances[:min(knn_k, len(distances))]
+
+    if dknn_k is not None and dknn_k > 0:
+        if range_radius is not None:
+            candidates = [(idx, dist) for idx, dist in distances if dist <= range_radius]
+        else:
+            candidates = distances
+        result["dknn"] = candidates[:min(dknn_k, len(candidates))]
+
+    return result

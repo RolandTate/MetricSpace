@@ -59,15 +59,17 @@ def run_adaptive_query_weighted_edit(dataset, score_matrix):
                     print(f"查询对象索引 {query_index:2d} → 未能唯一确定最近邻，使用距离计算次数: {calc_count}")
 
 if __name__ == "__main__":
-    string_data_path = "../Datasets/SISAP/strings/dictionaries/English.dic"
-    string_num = 50
-    dataset = load_umad_string_data(string_data_path, string_num)
-    print(f"从 {string_data_path} 加载前 {string_num} 条数据，共执行 {len(dataset)} 轮查询\n")
-    run_adaptive_query_edit(dataset)
+    # string_data_path = "../Datasets/SISAP/strings/dictionaries/English.dic"
+    # string_num = 50
+    # string_length = 10
+    # dataset = load_umad_string_data(string_data_path, string_num,string_length)
+    # print(f"从 {string_data_path} 加载前 {string_num} 条数据，共执行 {len(dataset)} 轮查询\n")
+    # run_adaptive_query_edit(dataset)
 
     protein_data_path = "../Datasets/Protein/yeast.aa"
-    protein_num = 10
-    dataset = load_fasta_protein_data(protein_data_path, protein_num)
+    protein_num = 5
+    protein_length = 15
+    dataset = load_fasta_protein_data(protein_data_path, protein_num, protein_length)
     print(f"从 {protein_data_path} 加载前 {protein_num} 条数据，共执行 {len(dataset)} 轮查询\n")
 
     mPAM_path = "../Datasets/Protein/mPAM.json"
