@@ -1,6 +1,6 @@
 {
   "dataset": {
-    "name": "texas",
+    "name": "randomvector-5-1m",
     "load_count": 1000
   },
   "distance_function": {
@@ -20,11 +20,13 @@
     }
   },
   "index_structure": {
-    "name": "Multiple Vantage Point Tree",
+    "name": "Linear Partition Tree",
     "max_leaf_size": 20,
     "pivot_k": 1,
-    "mvpt_regions": 3,
-    "mvpt_internal_pivots": 3
+    "mvpt_regions": 2,
+    "mvpt_internal_pivots": 3,
+    "lpt_matrix_A": [[1, -1, 0], [0, 1, -1], [1, 1, 1]],
+    "lpt_num_regions": 2
   },
   "queries": [],
   "run_mode": "interactive",

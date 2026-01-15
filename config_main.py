@@ -73,7 +73,8 @@ INDEX_STRUCTURES = {
     "Pivot Table": "pivot_table",
     "General Hyper-plane Tree": "GHT",
     "Vantage Point Tree": "VPT",
-    "Multiple Vantage Point Tree": "MVPT"
+    "Multiple Vantage Point Tree": "MVPT",
+    "Linear Partition Tree": "LPT"
 }
 
 

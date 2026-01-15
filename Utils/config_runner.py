@@ -11,6 +11,8 @@ from Index.Structure.GeneralHyperPlaneTree import GHTBulkload
 from Index.Search.GeneralHyperPlaneTreeSearch import GHTRangeSearch
 from Index.Structure.MultipleVantagePoinTree import MVPTBulkload
 from Index.Search.MultipleVantagePointTreeSearch import MVPTRangeSearch
+from Index.Structure.LinearPartitionTree import LPTBulkload
+from Index.Search.LinearPartitionSearch import LPTRangeSearch
 
 # 导入支撑点选择器
 from Algorithm.PivotSelection.ManualSelection import ManualPivotSelector
@@ -96,6 +98,22 @@ def run_with_config(config_path="full_test.json",
     
     index_type = INDEX_STRUCTURES[index_name]
     
+    # 为 LPT 创建查询函数包装器（需要 matrix_A 参数）
+    # 初始化变量以避免 NameError
+    lpt_matrix_A = None
+    lpt_num_regions = 2
+    lpt_query_wrapper = None
+    
+    if index_type == "LPT":
+        if "lpt_matrix_A" not in index_config:
+            print("错误：LPT 索引结构需要配置 'lpt_matrix_A' 参数")
+            return None, None, None, None, None
+        lpt_matrix_A = index_config["lpt_matrix_A"]
+        lpt_num_regions = index_config.get("lpt_num_regions", 2)
+        
+        def lpt_query_wrapper(node, query_point, distance_function, radius):
+            return LPTRangeSearch(node, query_point, distance_function, radius, lpt_matrix_A)
+    
     # 索引结构构建器和对应的查询算法映射
     INDEX_BUILDERS = {
         "pivot_table": (lambda: PivotTable(dataset, distance_func, pivot_selector, max_leaf_size, pivot_k), 
@@ -106,7 +124,10 @@ def run_with_config(config_path="full_test.json",
                 VPTRangeSearch, "Vantage Point Tree Range Search"),
         "MVPT": (lambda: MVPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k, 
                                      index_config["mvpt_regions"], index_config["mvpt_internal_pivots"]),
-                 MVPTRangeSearch, "Multiple Vantage Point Tree Range Search")
+                 MVPTRangeSearch, "Multiple Vantage Point Tree Range Search"),
+        "LPT": (lambda: LPTBulkload(dataset, max_leaf_size, distance_func, pivot_selector, pivot_k,
+                                   lpt_matrix_A, lpt_num_regions),
+                lpt_query_wrapper, "Linear Partition Tree Range Search")
     }
     
     try:
