@@ -1,14 +1,14 @@
 {
   "dataset": {
     "name": "randomvector-5-1m",
-    "load_count": 1000
+    "load_count": 10000
   },
   "distance_function": {
     "vector": "Euclidean Distance",
     "string": "Edit Distance"
   },
   "pivot_selector": {
-    "name": "Incremental Sampling",
+    "name": "Farthest First Traversal",
     "params": {
       "seed": 42,
       "candidate_size": 10,
@@ -20,8 +20,8 @@
     }
   },
   "index_structure": {
-    "name": "Linear Partition Tree",
-    "max_leaf_size": 20,
+    "name": "Vantage Point Tree",
+    "max_leaf_size": 30,
     "pivot_k": 1,
     "mvpt_regions": 2,
     "mvpt_internal_pivots": 3,

@@ -31,7 +31,7 @@ def LPTRangeSearch(node, query_point: MetricSpaceData, distance_function: Distan
         if d <= radius:
             result.append(p)
 
-    # 1. 预计算查询点在所有 k 个法向量上的投影值
+    # 预计算查询点在所有 k 个法向量上的投影值
     q_projections = []
     safety_margins = []  # 存储每个法向量对应的 sum(|a_i|) * r
 
@@ -57,7 +57,6 @@ def LPTRangeSearch(node, query_point: MetricSpaceData, distance_function: Distan
             l1_norm = sum(abs(c) for c in vector)
             safety_margins.append(l1_norm * radius)
 
-        # ================= 优化点 3：利用上下界（截距）进行剪枝 =================
         for i, child in enumerate(node.children):
             if not child:
                 continue
@@ -73,7 +72,6 @@ def LPTRangeSearch(node, query_point: MetricSpaceData, distance_function: Distan
                     is_pruned = True
                     break  # 只要有一个维度剪枝成功，就跳出法向量循环
 
-            # ================= 修复：递归结果聚合 =================
             if not is_pruned:
                 # 递归搜索子节点，并累加命中结果和距离计算次数
                 child_results, child_dist_count = LPTRangeSearch(child, query_point, distance_function, radius,

@@ -133,17 +133,18 @@ if __name__ == "__main__":
     from Core.DistanceFunction.MinkowskiDistance import MinkowskiDistance
 
     # 加载前 num 个向量，作为 MetricSpaceData 列表
-    dataset_path = "../Datasets/Protein/yeast.aa"
+    dataset_path = "../Datasets/Vector/texas.txt"
     num_to_load = 1000
-    dataset = load_fasta_protein_data(dataset_path, num=num_to_load)
+    # dataset = load_fasta_protein_data(dataset_path, num=num_to_load)
+    dataset = load_umad_vector_data(dataset_path, num_to_load)
 
     # 任意 DistanceFunction 实例，这里用 t=2 的 Minkowski (欧氏距离)
-    # distance_func = MinkowskiDistance(t=2)
+    distance_func = MinkowskiDistance(t=2)
 
-    mPAM_path = "../Datasets/Protein/mPAM.json"
-    with open(mPAM_path, 'r') as f:
-        score_matrix = json.load(f)
-    distance_func = WeightedEditDistance(score_matrix)
+    # mPAM_path = "../Datasets/Protein/mPAM.json"
+    # with open(mPAM_path, 'r') as f:
+    #     score_matrix = json.load(f)
+    # distance_func = WeightedEditDistance(score_matrix)
 
     # 抽样 n 个点（注意 n*(n-1)/2 次距离计算的时间开销）
     sample_count = 100

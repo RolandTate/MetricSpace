@@ -38,7 +38,9 @@ DEFAULT_CONFIG = {
         "max_leaf_size": 20,
         "pivot_k": 1,
         "mvpt_regions": 3,  # MVPT特有参数
-        "mvpt_internal_pivots": 3  # MVPT特有参数
+        "mvpt_internal_pivots": 3,  # MVPT特有参数
+        "lpt_matrix_A": [[1, -1, 0], [0, 1, -1], [1, 1, 1]],  # LPT特有参数
+        "lpt_num_regions": 2  # LPT特有参数
     },
     
     # 查询测试配置
